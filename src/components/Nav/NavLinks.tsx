@@ -5,7 +5,9 @@ const NavLinks = () => {
   return (
     <>
       <NavRoute name="home" route="/" />
+      <NavRoute name="dashboard" />
       <NavRoute name="login" />
+      <NavRoute name="signup" />
     </>
   );
 };

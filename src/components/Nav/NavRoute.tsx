@@ -7,8 +7,11 @@ const NavRoute = ({ name, route }: { name: string; route?: string }) => {
   const to = route || `/${name}`;
   // console.log(pathname, to);
   return (
-    <li>
-      <Link className={pathname === to ? "font-bold underline" : ""} href={to}>
+    <li className="list-none">
+      <Link
+        className={`${pathname === to ? "font-bold underline" : ""}`}
+        href={to}
+      >
         {name.toUpperCase()}
       </Link>
     </li>
