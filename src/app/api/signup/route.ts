@@ -3,6 +3,7 @@ import PolapainModel from "@/models/Polapain";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
@@ -27,6 +28,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  polapain.password = await bcrypt.hash(polapain.password, 10);
+
   await PolapainModel.create(polapain);
   const token = jwt.sign({ _id: polapain._id }, process.env.JWT_SECRET!, {
     expiresIn: "3d",
@@ -38,5 +41,10 @@ export async function POST(req: NextRequest) {
     sameSite: "strict",
     maxAge: 60 * 60 * 24 * 7,
   });
-  return Response.json({ message: "Polapain registered" });
+  return Response.json({
+    _id: polapain._id,
+    name: polapain.name,
+    avatar: polapain.avatar,
+    balance: polapain.balance,
+  });
 }

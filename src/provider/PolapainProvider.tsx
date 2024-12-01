@@ -1,0 +1,35 @@
+"use client";
+import { ReactNode, useEffect, useState } from "react";
+import axios from "axios";
+import { PolapainAuth } from "@/context/polapainAuth";
+
+const PolapainAuthProvider = ({ children }: { children: ReactNode }) => {
+  const [polapainAuth, setPolapainAuth] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoading(true);
+    // Fetch user data
+    axios
+      .get("/api/jwt")
+      .then((res) => {
+        // console.log(res.data);
+        setPolapainAuth(res.data);
+      })
+      .catch((err) => {
+        setPolapainAuth(undefined);
+        // toast.error(err.message);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <PolapainAuth.Provider
+      value={{ polapainAuth, setPolapainAuth, loading, setLoading }}
+    >
+      {children}
+    </PolapainAuth.Provider>
+  );
+};
+
+export default PolapainAuthProvider;

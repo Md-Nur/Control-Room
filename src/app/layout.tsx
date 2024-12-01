@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Nav/Navbar";
 import { Toaster } from "react-hot-toast";
 import Footer from "@/components/Footer";
+import PolapainAuthProvider from "@/provider/polapainProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,13 +32,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar>
-          <main className="min-h-[calc(100vh-296px)] flex flex-col justify-center items-center">
-            {children}
-            <Toaster position="top-right" reverseOrder={false} />
-          </main>
-          <Footer />
-        </Navbar>
+        <PolapainAuthProvider>
+          <Navbar>
+            <main className="min-h-[calc(100vh-296px)] flex flex-col justify-center items-center">
+              {children}
+              <Toaster position="top-right" reverseOrder={false} />
+            </main>
+            <Footer />
+          </Navbar>
+        </PolapainAuthProvider>
       </body>
     </html>
   );

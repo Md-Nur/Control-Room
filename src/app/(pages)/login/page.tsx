@@ -1,10 +1,41 @@
 "use client";
+import { usePolapainAuth } from "@/context/polapainAuth";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const { handleSubmit, register } = useForm();
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const authContext = usePolapainAuth();
+  if (typeof authContext === "string") {
+    throw new Error(authContext);
+  }
+  const { polapainAuth, setPolapainAuth } = authContext;
+  const router = useRouter();
+  if (polapainAuth) {
+    router.push("/dashboard");
+    return null;
+  }
+
+  const onSubmit = async (data: any) => {
+    toast.loading("Logging in...");
+    try {
+      const res = await axios.post("/api/login", data);
+      toast.dismiss();
+      if (res.data.error) {
+        toast.error(res.data.error);
+      } else {
+        setPolapainAuth(res.data);
+        toast.success("Logged in successfully");
+        router.push("/dashboard");
+      }
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(
+        error?.response?.data?.error || error.message || "Something went wrong"
+      );
+    }
   };
   return (
     <div className="hero py-10">
@@ -16,7 +47,10 @@ const Login = () => {
           </p>
         </div>
         <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-          <form className="card-body bg-base-300" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="card-body bg-base-300"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Name</span>

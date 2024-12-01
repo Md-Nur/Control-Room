@@ -2,15 +2,14 @@ import dbConnect from "@/lib/dbConnect";
 import PolapainModel, { Polapain } from "@/models/Polapain";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-  const cookieStore = await cookies();
   await dbConnect();
+  const cookieStore = await cookies();
   const { name, password } = await req.json();
   const polapain: Polapain | null = await PolapainModel.findOne({
     name,
-    password,
   });
   if (!polapain) {
     return Response.json(
@@ -18,6 +17,16 @@ export async function POST(req: Request) {
       { status: 404 }
     );
   }
+
+  const passwordMatch = await bcrypt.compare(password, polapain.password);
+
+  if (!passwordMatch) {
+    return Response.json(
+      { error: "Hop pola thik moto password de" },
+      { status: 400 }
+    );
+  }
+
   const token = jwt.sign({ _id: polapain._id }, process.env.JWT_SECRET!, {
     expiresIn: "7d",
   });
@@ -29,5 +38,10 @@ export async function POST(req: Request) {
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  return NextResponse.redirect("/dashboard");
+  return Response.json({
+    _id: polapain._id,
+    name: polapain.name,
+    avatar: polapain.avatar,
+    balance: polapain.balance,
+  });
 }

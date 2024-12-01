@@ -1,6 +1,8 @@
 "use client";
+import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -12,6 +14,16 @@ const SignUp = () => {
   const [avatar, setAvatar] = useState("");
   const [preview, setPreview] = useState("");
   const [progress, setProgress] = useState(0);
+  const router = useRouter();
+  const auth = usePolapainAuth();
+  if (typeof auth === "string") {
+    throw new Error(auth);
+  }
+  const { polapainAuth, setPolapainAuth } = auth;
+  if (polapainAuth) {
+    router.push("/dashboard");
+    return null;
+  }
 
   const onSubmit = async (data: any) => {
     toast.loading("Signing up...");
@@ -22,10 +34,16 @@ const SignUp = () => {
       if (polapain.status >= 400) {
         toast.error(polapain.data.error);
       } else {
-        toast.success(polapain.data.message);
+        toast.success("Welcome chutiya");
+        setPolapainAuth(polapain.data);
+        router.push("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+      console.log(error);
+      toast.dismiss();
+      toast.error(
+        error?.response?.data?.error || error.message || "Something went wrong"
+      );
     }
   };
 
@@ -60,8 +78,8 @@ const SignUp = () => {
   };
 
   return (
-    <div className="h-full w-full">
-      <h1 className="text-5xl font-bold text-center my-10">Sign Up Kor!</h1>
+    <div className="h-full w-full my-10">
+      <h1 className="text-5xl font-bold text-center my-5">Sign Up Kor!</h1>
       <div className="flex justify-center gap-5 items-center flex-col lg:flex-row-reverse w-full">
         <div className="">
           <label
@@ -99,11 +117,12 @@ const SignUp = () => {
           <button
             onClick={uploadAvatar}
             className="btn btn-primary m-3 block mx-auto"
+            disabled={progress === 100 || !preview}
           >
             Upload
           </button>
         </div>
-        <div className="card bg-base-100 w-96 shrink-0 shadow-2xl">
+        <div className="card bg-base-300 w-96 shrink-0 shadow-2xl">
           <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control">
               <label className="label">
@@ -125,7 +144,6 @@ const SignUp = () => {
                 type="text"
                 placeholder="Phone Number"
                 className="input input-bordered"
-                required
                 {...register("phone")}
               />
             </div>
@@ -137,7 +155,6 @@ const SignUp = () => {
                 type="date"
                 placeholder="Phone Number"
                 className="input input-bordered"
-                required
                 {...register("dob")}
               />
             </div>
@@ -149,7 +166,6 @@ const SignUp = () => {
                 type="password"
                 placeholder="password"
                 className="input input-bordered"
-                required
                 {...register("password")}
               />
             </div>
