@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
 
   polapain.password = await bcrypt.hash(polapain.password, 10);
 
-  await PolapainModel.create(polapain);
-  const token = jwt.sign({ _id: polapain._id }, process.env.JWT_SECRET!, {
+  const newPola = await PolapainModel.create(polapain);
+  const token = jwt.sign({ _id: newPola._id }, process.env.JWT_SECRET!, {
     expiresIn: "3d",
   });
 
@@ -42,9 +42,9 @@ export async function POST(req: NextRequest) {
     maxAge: 60 * 60 * 24 * 7,
   });
   return Response.json({
-    _id: polapain._id,
-    name: polapain.name,
-    avatar: polapain.avatar,
-    balance: polapain.balance,
+    _id: newPola._id,
+    name: newPola.name,
+    avatar: newPola.avatar,
+    balance: newPola.balance,
   });
 }

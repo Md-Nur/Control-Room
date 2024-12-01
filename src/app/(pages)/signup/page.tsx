@@ -20,10 +20,6 @@ const SignUp = () => {
     throw new Error(auth);
   }
   const { polapainAuth, setPolapainAuth } = auth;
-  if (polapainAuth) {
-    router.push("/dashboard");
-    return null;
-  }
 
   const onSubmit = async (data: any) => {
     toast.loading("Signing up...");
@@ -167,10 +163,11 @@ const SignUp = () => {
                 placeholder="password"
                 className="input input-bordered"
                 {...register("password")}
+                required
               />
             </div>
             <div className="form-control mt-6">
-              <button className="btn btn-primary">Login</button>
+              <button className="btn btn-primary">Sign Up</button>
             </div>
           </form>
         </div>

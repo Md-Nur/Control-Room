@@ -1,3 +1,4 @@
+"use client";
 import { usePolapainAuth } from "@/context/polapainAuth";
 
 const Dashboard = () => {

@@ -2,6 +2,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import axios from "axios";
 import { PolapainAuth } from "@/context/polapainAuth";
+import toast from "react-hot-toast";
 
 const PolapainAuthProvider = ({ children }: { children: ReactNode }) => {
   const [polapainAuth, setPolapainAuth] = useState<any>();
@@ -18,7 +19,7 @@ const PolapainAuthProvider = ({ children }: { children: ReactNode }) => {
       })
       .catch((err) => {
         setPolapainAuth(undefined);
-        // toast.error(err.message);
+        toast.error(err.response.data.error||err.message);
       })
       .finally(() => setLoading(false));
   }, []);
