@@ -3,9 +3,10 @@ import { ReactNode, useEffect, useState } from "react";
 import axios from "axios";
 import { PolapainAuth } from "@/context/polapainAuth";
 import toast from "react-hot-toast";
+import { Polapain } from "@/models/Polapain";
 
 const PolapainAuthProvider = ({ children }: { children: ReactNode }) => {
-  const [polapainAuth, setPolapainAuth] = useState<any>();
+  const [polapainAuth, setPolapainAuth] = useState<Polapain>();
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {

@@ -8,7 +8,7 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const { polapainAuth } = usePolapainAuth();
   const pathname = usePathname();
-  if (!polapainAuth && pathname === "/dashboard") {
+  if (!polapainAuth && !["/login", "/signup"].includes(pathname)) {
     router.push("/login");
     toast.error("You are not authorized to view this page");
     return <>You are not authorized to view this page</>;

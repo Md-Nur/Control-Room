@@ -2,11 +2,14 @@
 import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const Login = () => {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register } = useForm<{
+    name: string;
+    password: string;
+  }>();
   const authContext = usePolapainAuth();
   if (typeof authContext === "string") {
     throw new Error(authContext);
@@ -18,7 +21,10 @@ const Login = () => {
     return null;
   }
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<{
+    name: string;
+    password: string;
+  }> = async (data) => {
     toast.loading("Logging in...");
     try {
       const res = await axios.post("/api/login", data);
@@ -30,6 +36,7 @@ const Login = () => {
         toast.success("Logged in successfully");
         router.push("/dashboard");
       }
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       toast.dismiss();
       toast.error(

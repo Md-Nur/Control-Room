@@ -13,7 +13,11 @@ const NavLinks = () => {
     <>
       <NavRoute name="home" route="/" />
       {polapainAuth ? (
-        <NavRoute name="dashboard" />
+        <>
+          <NavRoute name="dashboard" />
+          <NavRoute name="all expenses" route="all-expenses" />
+          <NavRoute name="add expenses" route="add-expenses" />
+        </>
       ) : (
         <>
           <NavRoute name="login" />

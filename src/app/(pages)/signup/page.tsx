@@ -4,12 +4,20 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaUserAlt } from "react-icons/fa";
 
 const SignUp = () => {
-  const { handleSubmit, register } = useForm();
+  interface SignUpFormData {
+    name: string;
+    phone: string;
+    dob: string;
+    password: string;
+    avatar: string;
+  }
+
+  const { handleSubmit, register } = useForm<SignUpFormData>();
   const avatarFile = useRef(null);
   const [avatar, setAvatar] = useState("");
   const [preview, setPreview] = useState("");
@@ -21,7 +29,7 @@ const SignUp = () => {
   }
   const { polapainAuth, setPolapainAuth } = auth;
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
     toast.loading("Signing up...");
     data.avatar = avatar;
     try {
@@ -34,6 +42,7 @@ const SignUp = () => {
         setPolapainAuth(polapain.data);
         router.push("/dashboard");
       }
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       console.log(error);
       toast.dismiss();
@@ -72,6 +81,12 @@ const SignUp = () => {
       toast.success("Avatar uploaded");
     }
   };
+
+  if (polapainAuth) {
+    toast.success("You are already logged in");
+    router.push("/dashboard");
+    return null;
+  }
 
   return (
     <div className="h-full w-full my-10">

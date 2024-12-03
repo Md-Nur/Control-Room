@@ -1,7 +1,7 @@
 import KhorochModel from "@/models/Khoroch";
 import PolapainModel from "@/models/Polapain";
 
-export async function GET(req: Request) {
+export async function GET() {
   const allKhoroch = await KhorochModel.find();
   return Response.json(allKhoroch);
 }

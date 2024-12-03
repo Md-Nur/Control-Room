@@ -6,6 +6,7 @@ export interface Khoroch extends Document {
   date: Date;
   dise: { id: string; amount: number }[];
   dibo: { id: string; amount: number }[];
+  isApproved: boolean;
 }
 
 const khorochSchema = new Schema<Khoroch>({
@@ -14,6 +15,7 @@ const khorochSchema = new Schema<Khoroch>({
   date: { type: Date, required: true },
   dise: [{ type: { id: String, amount: Number } }],
   dibo: [{ type: { id: String, amount: Number } }],
+  isApproved: { type: Boolean, default: false },
 });
 
 const KhorochModel =

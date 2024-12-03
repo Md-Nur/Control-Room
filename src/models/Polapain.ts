@@ -7,6 +7,7 @@ export interface Polapain extends Document {
   password: string;
   avatar?: string;
   balance: number;
+  isManager: boolean;
 }
 
 const polapainSchema = new Schema<Polapain>({
@@ -16,6 +17,7 @@ const polapainSchema = new Schema<Polapain>({
   password: { type: String, required: true },
   avatar: { type: String, required: false },
   balance: { type: Number, default: 0 },
+  isManager: { type: Boolean, default: false },
 });
 
 const PolapainModel =

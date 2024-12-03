@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import PolapainModel from "@/models/Polapain";
 import dbConnect from "@/lib/dbConnect";
 
-export async function GET(req: Request) {
+export async function GET() {
   await dbConnect();
   const cookieStore = await cookies();
   const token: string | undefined = cookieStore.get("token")?.value;
@@ -11,6 +11,7 @@ export async function GET(req: Request) {
   if (!token) {
     return Response.json({ error: "Did not found token" }, { status: 401 });
   }
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const userId: any = jwt.verify(token, process.env.JWT_SECRET!);
   if (!userId) {
     return Response.json(
@@ -29,5 +30,6 @@ export async function GET(req: Request) {
     name: newUser.name,
     avatar: newUser.avatar,
     balance: newUser.balance,
+    isManager: newUser.isManager,
   });
 }
