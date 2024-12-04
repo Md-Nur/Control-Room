@@ -20,7 +20,7 @@ const PolapainAuthProvider = ({ children }: { children: ReactNode }) => {
       })
       .catch((err) => {
         setPolapainAuth(undefined);
-        toast.error(err.response.data.error||err.message);
+        // toast.error(err?.response?.data?.error||err.message);
       })
       .finally(() => setLoading(false));
   }, []);
