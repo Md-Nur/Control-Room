@@ -27,7 +27,7 @@ const SignUp = () => {
   if (typeof auth === "string") {
     throw new Error(auth);
   }
-  const { polapainAuth, setPolapainAuth } = auth;
+  const { setPolapainAuth } = auth;
 
   const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
     toast.loading("Signing up...");
@@ -82,11 +82,6 @@ const SignUp = () => {
     }
   };
 
-  if (polapainAuth) {
-    toast.success("You are already logged in");
-    router.push("/dashboard");
-    return null;
-  }
 
   return (
     <div className="h-full w-full my-10">

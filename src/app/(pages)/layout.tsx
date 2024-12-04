@@ -2,7 +2,6 @@
 import { usePolapainAuth } from "@/context/polapainAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode } from "react";
-import toast from "react-hot-toast";
 
 const PageLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -10,8 +9,9 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   if (!polapainAuth && !["/login", "/signup"].includes(pathname)) {
     router.push("/login");
-    toast.error("You are not authorized to view this page");
     return <>You are not authorized to view this page</>;
+  } else if (polapainAuth && ["/login", "/signup"].includes(pathname)) {
+    router.push("/dashboard");
   } else {
     return children;
   }
