@@ -22,6 +22,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(pages)/dashboard/page.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/(pages)/dashboard/page.jsx",
+    "src/app/(pages)/add-expenses/1/page.jsx"
+, "src/app/(pages)/add-expenses/2/page.jsx", "src/app/(pages)/add-expenses/4/page.tsx", "src/app/(pages)/add-expenses/3/page.jsx"  ],
   "exclude": ["node_modules"]
 }

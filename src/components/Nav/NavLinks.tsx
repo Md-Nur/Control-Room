@@ -29,7 +29,7 @@ const NavLinks = () => {
         <>
           <NavRoute name="dashboard" />
           <NavRoute name="all expenses" route="/all-expenses" />
-          <NavRoute name="add expenses" route="/add-expenses" />
+          <NavRoute name="add expenses" route="/add-expenses/1" />
           <li className="list-none">
             <button onClick={handleLogout}>LOGOUT</button>
           </li>

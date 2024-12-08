@@ -1,16 +1,12 @@
 "use client";
 import { Khoroch } from "@/models/Khoroch";
 import axios from "axios";
-import Image from "next/image";
+// import Image from "next/image";
 import { useEffect, useState } from "react";
-
-interface expensesProps extends Khoroch {
-  dise: { avatar: string; name: string; id: string; amount: number }[];
-  dibo: { avatar: string; name: string; id: string; amount: number }[];
-}
+import toast from "react-hot-toast";
 
 const Expenses = () => {
-  const [expenses, setExpenses] = useState<expensesProps[]>([]);
+  const [expenses, setExpenses] = useState<Khoroch[]>([]);
   useEffect(() => {
     axios
       .get("/api/expenses")
@@ -18,7 +14,8 @@ const Expenses = () => {
         setExpenses(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err?.response?.data?.error || "Something went wrong");
+        // console.log(err);
       });
   }, []);
 
@@ -48,12 +45,12 @@ const Expenses = () => {
                     {expense.dise.map((pola, i) => (
                       <div className="avatar" key={i}>
                         <div className="mask mask-squircle w-24">
-                          <Image
-                            src={pola.avatar}
-                            alt="avatar"
-                            width={100}
-                            height={100}
-                          />
+                          {/* <Image 
+                             src={pola.avatar}
+                             alt="avatar"
+                             width={100}
+                             height={100}
+                           /> */}
                         </div>
                         <div className="avatar-content">
                           <div className="font-bold">{pola.name}</div>
@@ -66,12 +63,12 @@ const Expenses = () => {
                     {expense.dibo.map((pola, i) => (
                       <div className="avatar" key={i}>
                         <div className="mask mask-squircle w-24">
-                          <Image
+                          {/* <Image
                             src={pola.avatar}
                             alt="avatar"
                             width={100}
                             height={100}
-                          />
+                          /> */}
                         </div>
                         <div className="avatar-content">
                           <div className="font-bold">{pola.name}</div>

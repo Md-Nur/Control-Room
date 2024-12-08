@@ -19,7 +19,7 @@ export async function GET() {
       { status: 401 }
     );
   }
-  console.log(userId);
+  // console.log(userId);
   const newUser = await PolapainModel.findById(userId._id);
   if (!newUser) {
     return Response.json({ error: "Unauthorized Pola nai" }, { status: 401 });

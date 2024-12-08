@@ -2,7 +2,6 @@
 import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -22,7 +21,6 @@ const SignUp = () => {
   const [avatar, setAvatar] = useState("");
   const [preview, setPreview] = useState("");
   const [progress, setProgress] = useState(0);
-  const router = useRouter();
   const auth = usePolapainAuth();
   if (typeof auth === "string") {
     throw new Error(auth);
@@ -40,11 +38,10 @@ const SignUp = () => {
       } else {
         toast.success("Welcome chutiya");
         setPolapainAuth(polapain.data);
-        router.push("/dashboard");
       }
       /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
-      console.log(error);
+      // console.log(error);
       toast.dismiss();
       toast.error(
         error?.response?.data?.error || error.message || "Something went wrong"

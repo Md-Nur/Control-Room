@@ -5,13 +5,20 @@ import { ReactNode } from "react";
 
 const PageLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const { polapainAuth } = usePolapainAuth();
+  const { polapainAuth, loading } = usePolapainAuth();
   const pathname = usePathname();
-  if (!polapainAuth && !["/login", "/signup"].includes(pathname)) {
+  if (loading) {
+    return <span className="loading loading-bars loading-lg"></span>;
+  } else if (
+    !loading &&
+    !polapainAuth &&
+    !["/login", "/signup"].includes(pathname)
+  ) {
     router.push("/login");
-    return <>You are not authorized to view this page</>;
+    return null;
   } else if (polapainAuth && ["/login", "/signup"].includes(pathname)) {
     router.push("/dashboard");
+    return null;
   } else {
     return children;
   }

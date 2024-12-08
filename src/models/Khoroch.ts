@@ -4,8 +4,9 @@ export interface Khoroch extends Document {
   amount: number;
   title: string;
   date: Date;
-  dise: { id: string; amount: number }[];
-  dibo: { id: string; amount: number }[];
+  dise: { id: string; name: string; amount: number }[];
+  dibo: { id: string; name: string; amount: number }[];
+  type: string;
   isApproved: boolean;
 }
 
@@ -13,8 +14,9 @@ const khorochSchema = new Schema<Khoroch>({
   amount: { type: Number, required: true },
   title: { type: String, required: true },
   date: { type: Date, required: true },
-  dise: [{ type: { id: String, amount: Number } }],
-  dibo: [{ type: { id: String, amount: Number } }],
+  dise: [{ id: String, amount: Number }],
+  dibo: [{ id: String, amount: Number }],
+  type: { type: String, required: true, enum: ["food", "others"] },
   isApproved: { type: Boolean, default: false },
 });
 
