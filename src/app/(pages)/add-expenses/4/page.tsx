@@ -63,10 +63,10 @@ const AddExpenses4 = () => {
               )}
             </td>
             <td>
-              {khroch?.dibo.reduce(
+              {(khroch?.dibo.reduce(
                 (acc, curr) => Number(acc) + Number(curr.amount),
                 0
-              )}
+              ))?.toFixed(2)}
             </td>
           </tr>
         </tfoot>

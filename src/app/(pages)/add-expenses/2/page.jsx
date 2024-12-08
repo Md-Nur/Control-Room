@@ -40,6 +40,7 @@ const AddExpense2 = () => {
                 className="input input-bordered"
                 type="number"
                 placeholder="Amount"
+                step="any"
                 defaultValue={
                   (khroch?.amount &&
                     (khroch.amount / polapains.length).toFixed(2)) ||
