@@ -79,7 +79,6 @@ const SignUp = () => {
     }
   };
 
-
   return (
     <div className="h-full w-full my-10">
       <h1 className="text-5xl font-bold text-center my-5">Sign Up Kor!</h1>
@@ -109,6 +108,7 @@ const SignUp = () => {
             id="avatar"
             type="file"
             className="hidden"
+            required
           />
           <progress
             className={`progress progress-primary w-80 block mx-auto ${

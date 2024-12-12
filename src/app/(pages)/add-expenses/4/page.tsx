@@ -1,24 +1,26 @@
 "use client";
 import { useKhoroch } from "@/context/addKhoroch";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 const AddExpenses4 = () => {
   const { khroch, polapains } = useKhoroch();
+  const router = useRouter();
   const handleSubmit = () => {
     toast.loading("Submitting...");
     axios
       .post("/api/all-expenses", khroch)
-      .then((res) => {
+      .then(() => {
         toast.dismiss();
         toast.success("Submitted");
-
-        console.log(res.data);
+        router.push("/all-expenses");
       })
       .catch((err) => {
-        console.log(err);
+        toast.dismiss();
+        toast.error(err?.response?.data?.error || "Something went wrong");
       });
-    console.log(khroch);
   };
   return (
     <div className="w-full flex flex-col justify-center items-center">
@@ -36,7 +38,7 @@ const AddExpenses4 = () => {
           Date: {khroch?.date.toDateString() || "Date Nai"}
         </p>
       </div>
-      <table className="table rounded bg-base-300 w-auto mt-10">
+      <table className="table rounded bg-base-300 max-w-72 mt-10">
         <thead>
           <tr className="hover">
             <th>Polapain</th>
@@ -63,17 +65,21 @@ const AddExpenses4 = () => {
               )}
             </td>
             <td>
-              {(khroch?.dibo.reduce(
-                (acc, curr) => Number(acc) + Number(curr.amount),
-                0
-              ))?.toFixed(2)}
+              {khroch?.dibo
+                .reduce((acc, curr) => Number(acc) + Number(curr.amount), 0)
+                ?.toFixed(2)}
             </td>
           </tr>
         </tfoot>
       </table>
-      <button onClick={handleSubmit} className="btn btn-secondary mt-2 mb-10">
-        Submit
-      </button>
+      <div className="flex justify-between w-full items-center max-w-72 mt-2 mb-10">
+        <Link className="btn btn-primary" href="/add-expenses/3">
+          Previous
+        </Link>
+        <button onClick={handleSubmit} className="btn btn-primary">
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

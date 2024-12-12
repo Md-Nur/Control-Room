@@ -9,7 +9,7 @@ const Expenses = () => {
   const [expenses, setExpenses] = useState<Khoroch[]>([]);
   useEffect(() => {
     axios
-      .get("/api/expenses")
+      .get("/api/all-expenses")
       .then((res) => {
         setExpenses(res.data);
       })
@@ -21,62 +21,78 @@ const Expenses = () => {
 
   return (
     <section>
-      <h1>Expenses</h1>
+      <h1 className="text-4xl text-center my-10 font-bold">Expenses</h1>
       <div className="overflow-x-auto">
         <table className="table">
-          {/* head */}
           <thead>
-            <tr>
+            <tr className="hover">
               <th>Title</th>
               <th>Date</th>
               <th>Polapains Taka Dibo</th>
               <th>Polapain Taka Dise</th>
+              <th>Category</th>
               <th>Total Amount</th>
             </tr>
           </thead>
           <tbody>
-            {/* row 1 */}
             {expenses.length &&
               expenses?.map((expense, i) => (
-                <tr key={i}>
+                <tr className="hover" key={i}>
                   <td>{expense.title}</td>
                   <td>{new Date(expense.date).toLocaleDateString()}</td>
                   <td>
-                    {expense.dise.map((pola, i) => (
-                      <div className="avatar" key={i}>
-                        <div className="mask mask-squircle w-24">
-                          {/* <Image 
-                             src={pola.avatar}
-                             alt="avatar"
-                             width={100}
-                             height={100}
-                           /> */}
-                        </div>
-                        <div className="avatar-content">
-                          <div className="font-bold">{pola.name}</div>
-                          <div>{pola.amount}</div>
-                        </div>
-                      </div>
-                    ))}
+                    <div className="flex gap-1 flex-wrap">
+                      {expense.dise.map(
+                        (pola, i) =>
+                          pola.amount > 0 && (
+                            <div
+                              className="avatar tooltip"
+                              data-tip={`name: ${pola.name} amount: ${pola.amount}`}
+                              key={i}
+                            >
+                              <div className="mask mask-squircle w-12">
+                                <img
+                                  src={
+                                    pola?.avatar ||
+                                    "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
+                                  }
+                                  alt={pola.name}
+                                  width={100}
+                                  height={100}
+                                />
+                              </div>
+                            </div>
+                          )
+                      )}
+                    </div>
                   </td>
-                  <td>
-                    {expense.dibo.map((pola, i) => (
-                      <div className="avatar" key={i}>
-                        <div className="mask mask-squircle w-24">
-                          {/* <Image
-                            src={pola.avatar}
-                            alt="avatar"
-                            width={100}
-                            height={100}
-                          /> */}
-                        </div>
-                        <div className="avatar-content">
-                          <div className="font-bold">{pola.name}</div>
-                          <div>{pola.amount}</div>
-                        </div>
-                      </div>
-                    ))}
+                  <td className="flex gap-2">
+                    <div className="flex gap-1 flex-wrap">
+                      {expense.dise.map(
+                        (pola, i) =>
+                          pola.amount > 0 && (
+                            <div
+                              className="avatar tooltip"
+                              data-tip={`name: ${pola.name} amount: ${pola.amount}`}
+                              key={i}
+                            >
+                              <div className="mask mask-squircle w-12">
+                                <img
+                                  src={
+                                    pola?.avatar ||
+                                    "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
+                                  }
+                                  alt={pola.name}
+                                  width={100}
+                                  height={100}
+                                />
+                              </div>
+                            </div>
+                          )
+                      )}
+                    </div>
                   </td>
+                  <td className="capitalize">{expense.type}</td>
                   <td>{expense.amount}</td>
                 </tr>
               ))}

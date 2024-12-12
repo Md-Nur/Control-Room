@@ -28,29 +28,29 @@ const AddExpenses = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex justify-center flex-col p-5 items-center flex-wrap gap-3"
       >
-        <div className="flex w-72 justify-between">
+        <div className="flex w-full max-w-72 justify-between">
           <label className="label">Title</label>
           <input
-            className="input input-bordered"
+            className="input input-bordered w-40"
             type="text"
             placeholder="Title"
             {...register("title")}
           />
         </div>
-        <div className="flex w-72 justify-between">
+        <div className="flex max-w-72 w-full justify-between">
           <label className="label">Amount</label>
           <input
-            className="input input-bordered"
+            className="input input-bordered w-40"
             type="number"
             placeholder="Total Amount"
             min={1}
             {...register("amount")}
           />
         </div>
-        <div className="flex w-72 justify-between">
+        <div className="flex w-full max-w-72 justify-between">
           <label className="label">Type</label>
           <select
-            className="select select-bordered"
+            className="select select-bordered w-40"
             {...register("type")}
             defaultValue="food"
           >
@@ -58,7 +58,7 @@ const AddExpenses = () => {
               Select Type
             </option>
             <option value="food">Food</option>
-            <option value="other">Other</option>
+            <option value="others">Other</option>
           </select>
         </div>
         <button className="btn btn-primary" type="submit">

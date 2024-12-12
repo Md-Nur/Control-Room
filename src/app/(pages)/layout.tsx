@@ -16,7 +16,12 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   ) {
     router.push("/login");
     return null;
-  } else if (polapainAuth && ["/login", "/signup"].includes(pathname)) {
+  } else if (
+    polapainAuth &&
+    ["/login", "/signup"].includes(pathname) &&
+    pathname !== "/dashboard"
+  ) {
+    // console.log(pathname);
     router.push("/dashboard");
     return null;
   } else {

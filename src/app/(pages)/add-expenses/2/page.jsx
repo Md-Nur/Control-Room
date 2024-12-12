@@ -3,6 +3,7 @@ import { useKhoroch } from "@/context/addKhoroch";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const AddExpense2 = () => {
   const router = useRouter();
@@ -10,6 +11,14 @@ const AddExpense2 = () => {
   const { polapains, khroch, setKhoroch } = useKhoroch();
   const { register, handleSubmit } = useForm();
   const onSubmit = async (data) => {
+    let amount = 0;
+    data.dibo.forEach((d) => {
+      amount += Number(d.amount);
+    });
+    if (Math.abs(khroch.amount - amount) > 1) {
+      toast.error("Amount is not equal to total amount");
+      return;
+    }
     setKhoroch({
       ...khroch,
       ...data,
@@ -27,9 +36,13 @@ const AddExpense2 = () => {
           polapains.map((polapain, i) => (
             <div
               key={polapain._id}
-              className="flex justify-between w-full max-w-80"
+              className="flex gap-3 items-center"
             >
-              <label className="label">{polapain.name}</label>
+              <div className="avatar tooltip" data-tip={polapain.name}>
+                <div className="mask mask-squircle w-12">
+                  <img src={polapain.avatar} />
+                </div>
+              </div>
               <input
                 className="hidden"
                 type="text"
@@ -37,7 +50,19 @@ const AddExpense2 = () => {
                 {...register(`dibo.${i}.id`)}
               />
               <input
-                className="input input-bordered"
+                className="hidden"
+                type="text"
+                value={polapain.name}
+                {...register(`dibo.${i}.name`)}
+              />
+              <input
+                className="hidden"
+                type="text"
+                value={polapain.avatar}
+                {...register(`dibo.${i}.avatar`)}
+              />
+              <input
+                className="input input-bordered w-40"
                 type="number"
                 placeholder="Amount"
                 step="any"
@@ -53,7 +78,7 @@ const AddExpense2 = () => {
         ) : (
           <span className="loading loading-bars loading-sm"></span>
         )}
-        <div className="flex w-full max-w-80 justify-between my-10">
+        <div className="flex w-full max-w-72 justify-between my-10">
           <Link className="btn btn-primary" href="/add-expenses/1">
             Previous
           </Link>
