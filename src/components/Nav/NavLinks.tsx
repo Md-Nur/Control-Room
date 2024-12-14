@@ -9,9 +9,10 @@ const NavLinks = () => {
   if (typeof authContext === "string") {
     return null; // or handle the error appropriately
   }
-  const { polapainAuth, setPolapainAuth } = authContext;
+  const { polapainAuth, setPolapainAuth, setLoading, loading } = authContext;
 
   const handleLogout = () => {
+    setLoading(true);
     axios
       .get("/api/logout")
       .then(() => {
@@ -19,17 +20,21 @@ const NavLinks = () => {
       })
       .catch((e) => {
         toast.error(e.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <>
       <NavRoute name="home" route="/" />
-      {polapainAuth ? (
+      {!loading && polapainAuth ? (
         <>
           <NavRoute name="dashboard" />
           <NavRoute name="all expenses" route="/all-expenses" />
           <NavRoute name="add expenses" route="/add-expenses/1" />
+          {polapainAuth?.isManager && <NavRoute name="manager" />}
           <li className="list-none">
             <button onClick={handleLogout}>LOGOUT</button>
           </li>

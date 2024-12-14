@@ -8,6 +8,7 @@ const Dashboard = () => {
   const { polapainAuth } = usePolapainAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     axios
       .get("/api/all-expenses")
@@ -22,13 +23,17 @@ const Dashboard = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [polapainAuth.expenses]);
+  }, []);
 
   return (
     <section className="flex gap-1 justify-evenly w-full">
       <div className="max-w-xs">
         <h1 className="text-center text-4xl font-bold">{polapainAuth.name}</h1>
-        <img className="mask mask-squircle w-24" src={polapainAuth.avatar} />
+        <img
+          className="mask mask-squircle w-24"
+          src={polapainAuth?.avatar || "/avatar.jpg"}
+          alt={polapainAuth.name}
+        />
         <p className="text-lg">Date of Birth: {polapainAuth.dob}</p>
         <p className="text-lg">Phone: {polapainAuth.phone}</p>
         <p
@@ -54,13 +59,13 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {!loading ? (
+              {!loading && expenses.length ? (
                 expenses.map(
                   (expense) =>
                     (expense.dise.find((d) => d.id === polapainAuth._id)
-                      .amount > 0 ||
+                      ?.amount ||
                       expense.dibo.find((d) => d.id === polapainAuth._id)
-                        .amount > 0) && (
+                        ?.amount) && (
                       <tr key={expense._id}>
                         <td>{expense.title}</td>
                         <td>{expense.amount.toFixed(2)}</td>

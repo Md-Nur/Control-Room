@@ -9,11 +9,7 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   if (loading) {
     return <span className="loading loading-bars loading-lg"></span>;
-  } else if (
-    !loading &&
-    !polapainAuth &&
-    !["/login", "/signup"].includes(pathname)
-  ) {
+  } else if (!polapainAuth && !["/login", "/signup"].includes(pathname)) {
     router.push("/login");
     return null;
   } else if (
@@ -21,7 +17,6 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
     ["/login", "/signup"].includes(pathname) &&
     pathname !== "/dashboard"
   ) {
-    // console.log(pathname);
     router.push("/dashboard");
     return null;
   } else {

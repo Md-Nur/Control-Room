@@ -1,3 +1,4 @@
+"use client";
 import { usePolapainAuth } from "@/context/polapainAuth";
 import { ReactNode } from "react";
 import toast from "react-hot-toast";
