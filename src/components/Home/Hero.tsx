@@ -1,7 +1,7 @@
 const Hero = () => {
   return (
     <div
-      className="hero min-h-screen"
+      className="hero h-72 sm:h-96 md:h-[500px]"
       style={{
         backgroundImage:
           "url(https://i.ibb.co.com/HnmfKMd/PXL-20241204-062046799-PORTRAIT.jpg)",

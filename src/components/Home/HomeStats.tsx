@@ -1,40 +1,70 @@
+"use client";
 import Image from "next/image";
 
+const images = [
+  {
+    src: "/images/1.jpg",
+    alt: "Photo 1",
+  },
+  {
+    src: "/images/2.jpg",
+    alt: "Photo 2",
+  },
+  {
+    src: "/images/3.jpg",
+    alt: "Photo 3",
+  },
+  {
+    src: "/images/4.jpg",
+    alt: "Photo 4",
+  },
+  {
+    src: "/images/5.jpg",
+    alt: "Photo 5",
+  },
+  {
+    src: "/images/6.jpg",
+    alt: "Photo 6",
+  },
+  {
+    src: "/images/7.jpg",
+    alt: "Photo 7",
+  },
+  {
+    src: "/images/8.jpg",
+    alt: "Photo 8",
+  },
+  {
+    src: "/images/9.jpg",
+    alt: "Photo 9",
+  },
+  {
+    src: "/images/10.jpg",
+    alt: "Photo 10",
+  },
+  {
+    src: "/images/11.jpg",
+    alt: "Photo 11",
+  },
+];
 const HomeStats = () => {
   return (
-    <div className="stats shadow my-10">
-      <div className="stat">
-        <div className="stat-figure text-primary"></div>
-        <div className="stat-title">Total Time</div>
-        <div className="stat-value text-primary">3 days</div>
-        <div className="stat-desc">In 2024</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-figure text-secondary">{/* <Fa */}</div>
-        <div className="stat-title">Total Expense</div>
-        <div className="stat-value text-secondary">2.6M</div>
-        <div className="stat-desc">21% more than last month</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-figure text-secondary">
-          <div className="avatar online">
-            <div className="w-16 rounded-full">
-              <Image
-                alt="Manager"
-                width={100}
-                height={100}
-                src="https://i.ibb.co.com/mGpCz3G/rubayet.jpg"
-              />
-            </div>
+    <section>
+      <h1 className="text-center text-4xl font-bold my-10">Photos</h1>
+      <div className="flex gap-3 flex-wrap justify-center items-baseline">
+        {images.map((image, index) => (
+          <div className="max-w-xs h-full" key={index}>
+            <Image
+              src={image.src}
+              alt={image.alt}
+              width={300}
+              height={300}
+              className="w-full h-full object-cover rounded"
+            />
           </div>
-        </div>
-        <div className="stat-value">Manager</div>
-        <div className="stat-title">Rubayet</div>
-        <div className="stat-desc text-secondary">31 tasks remaining</div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
 
