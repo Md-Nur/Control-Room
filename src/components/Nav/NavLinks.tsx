@@ -42,7 +42,7 @@ const NavLinks = () => {
       ) : (
         <>
           <NavRoute name="login" />
-          <NavRoute name="signup" />
+          {/* <NavRoute name="signup" /> */}
         </>
       )}
     </>

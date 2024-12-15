@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
+  return Response.json({ message: "Pola is not allowed right now" });
   await dbConnect();
   const cookieStore = await cookies();
   const polapain = await req.json();
