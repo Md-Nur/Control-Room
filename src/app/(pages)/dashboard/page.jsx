@@ -23,7 +23,6 @@ const Dashboard = () => {
       .finally(() => {
         setLoading(false);
       });
-      console.log(polapainAuth)
   }, []);
 
   return (
