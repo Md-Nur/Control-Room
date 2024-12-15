@@ -12,11 +12,12 @@ const AddExpenses3 = () => {
   const { handleSubmit, register } = useForm();
   const [managerDise, setManagerDise] = useState(0);
   const onSubmit = (data) => {
-    let amount = managerDise;
+    let amount = Number(managerDise || 0);
     data.dise.forEach((d) => {
       amount += Number(d.amount);
     });
     if (Math.abs(khroch.amount - amount) > 1) {
+      console.log(khroch.amount, amount);
       toast.error("Amount is not equal to total amount");
       return;
     }
