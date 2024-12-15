@@ -20,9 +20,9 @@ const Expenses = () => {
   }, []);
 
   return (
-    <section>
+    <section className="w-full"> 
       <h1 className="text-4xl text-center my-10 font-bold">Expenses</h1>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto w-full">
         <table className="table">
           <thead>
             <tr className="hover">

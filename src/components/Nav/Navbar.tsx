@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
 import { MdMenu } from "react-icons/md";
 import NavLinks from "./NavLinks";
+import Logo from "../../../public/logo.jpg";
+import Image from "next/image";
 
 const Navbar = ({ children }: { children: ReactNode }) => {
   return (
@@ -15,10 +17,12 @@ const Navbar = ({ children }: { children: ReactNode }) => {
               aria-label="open sidebar"
               className="btn btn-square btn-ghost"
             >
-              <MdMenu />
+              <MdMenu className="w-7 h-7" />
             </label>
           </div>
-          <div className="mx-2 flex-1 px-2">Control Room</div>
+          <div className="mx-2 flex-1 px-2">
+            <Image src={Logo} alt="Logo" className="w-12 h-12 rounded" />
+          </div>
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
               {/* Navbar menu content here */}
