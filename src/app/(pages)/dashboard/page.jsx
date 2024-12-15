@@ -34,14 +34,19 @@ const Dashboard = () => {
           src={polapainAuth?.avatar || "/avatar.jpg"}
           alt={polapainAuth.name}
         />
-        <p className="text-lg">Date of Birth: {polapainAuth.dob.split("T")[0]}</p>
+        <p className="text-lg">
+          Date of Birth: {polapainAuth.dob.split("T")[0]}
+        </p>
         <p className="text-lg">Phone: {polapainAuth.phone}</p>
-        <p
-          className={`text-lg ${
-            polapainAuth.balance > 0 ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          Balance: {polapainAuth.balance.toFixed(2)}
+        <p className={"text-lg"}>
+          Balance:{" "}
+          <span
+            className={`${
+              polapainAuth.balance > 0 ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {polapainAuth.balance.toFixed(2)}
+          </span>
         </p>
       </div>
       <div className="flex flex-col gap-5 w-full max-w-lg">
