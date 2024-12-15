@@ -44,7 +44,7 @@ const Dashboard = () => {
           Balance: {polapainAuth.balance.toFixed(2)}
         </p>
       </div>
-      <div className="flex flex-col gap-5 w-full">
+      <div className="flex flex-col gap-5 w-full max-w-lg">
         <h1 className="text-3xl font-bold">Recent Expenses</h1>
         <div className="overflow-x-auto">
           <table className="table w-full">
