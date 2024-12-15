@@ -23,6 +23,7 @@ const Dashboard = () => {
       .finally(() => {
         setLoading(false);
       });
+      console.log(polapainAuth)
   }, []);
 
   return (
@@ -34,7 +35,7 @@ const Dashboard = () => {
           src={polapainAuth?.avatar || "/avatar.jpg"}
           alt={polapainAuth.name}
         />
-        <p className="text-lg">Date of Birth: {polapainAuth.dob}</p>
+        <p className="text-lg">Date of Birth: {polapainAuth.dob.split("T")[0]}</p>
         <p className="text-lg">Phone: {polapainAuth.phone}</p>
         <p
           className={`text-lg ${

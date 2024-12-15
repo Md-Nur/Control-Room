@@ -29,6 +29,8 @@ export async function GET() {
     _id: newUser._id,
     name: newUser.name,
     avatar: newUser.avatar,
+    dob: newUser.dob,
+    phone: newUser.phone,
     balance: newUser.balance,
     isManager: newUser.isManager,
   });
