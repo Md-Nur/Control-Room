@@ -26,7 +26,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section className="flex gap-1 justify-evenly w-full">
+    <section className="flex gap-1 justify-evenly w-full flex-wrap">
       <div className="max-w-xs">
         <h1 className="text-center text-4xl font-bold">{polapainAuth.name}</h1>
         <img
