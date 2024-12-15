@@ -1,7 +1,6 @@
 "use client";
 import { Polapain } from "@/models/Polapain";
 import axios from "axios";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
