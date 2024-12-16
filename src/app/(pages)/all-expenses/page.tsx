@@ -42,7 +42,7 @@ const Expenses = () => {
                   <td>{new Date(expense.date).toLocaleDateString()}</td>
                   <td>
                     <div className="flex gap-1 flex-wrap">
-                      {expense.dise.map(
+                      {expense.dibo.map(
                         (pola, i) =>
                           pola.amount > 0 && (
                             <div
