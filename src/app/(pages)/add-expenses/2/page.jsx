@@ -1,15 +1,21 @@
 "use client";
 import { useKhoroch } from "@/context/addKhoroch";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { FaTrash } from "react-icons/fa";
 
 const AddExpense2 = () => {
   const router = useRouter();
+  const { polapains, setPolapains, khroch, setKhoroch } = useKhoroch();
+  const [defaultAmount, setDefaultAmount] = useState(
+    (khroch?.amount && (khroch.amount / polapains.length).toFixed(2)) || 0
+  );
+  const { register, handleSubmit, resetField } = useForm();
 
-  const { polapains, khroch, setKhoroch } = useKhoroch();
-  const { register, handleSubmit } = useForm();
   const onSubmit = async (data) => {
     let amount = 0;
     data.dibo.forEach((d) => {
@@ -25,6 +31,12 @@ const AddExpense2 = () => {
     });
     router.push("/add-expenses/3");
   };
+
+  const handleRemove = (id) => {
+    setPolapains((prev) => prev.filter((p) => p._id !== id));
+    setDefaultAmount((khroch.amount / (polapains.length - 1)).toFixed(2));
+    resetField("dibo");
+  };
   return (
     <div className="w-full max-w-3xl mx-auto px-5">
       <h1 className="text-center text-3xl font-bold my-10">Dite Hobe</h1>
@@ -34,13 +46,18 @@ const AddExpense2 = () => {
       >
         {polapains?.length ? (
           polapains.map((polapain, i) => (
-            <div
-              key={polapain._id}
-              className="flex gap-3 items-center"
-            >
+            <div key={polapain._id} className="flex gap-3 items-center">
               <div className="avatar tooltip" data-tip={polapain.name}>
                 <div className="mask mask-squircle w-12">
-                  <img src={polapain.avatar} />
+                  <Image
+                    width={100}
+                    height={100}
+                    alt={"Avatar"}
+                    src={
+                      polapain?.avatar ||
+                      "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
+                    }
+                  />
                 </div>
               </div>
               <input
@@ -62,17 +79,21 @@ const AddExpense2 = () => {
                 {...register(`dibo.${i}.avatar`)}
               />
               <input
+                id={`add-khoroch-ditehobe-${polapain._id}`}
                 className="input input-bordered w-40"
                 type="number"
                 placeholder="Amount"
                 step="any"
-                defaultValue={
-                  (khroch?.amount &&
-                    (khroch.amount / polapains.length).toFixed(2)) ||
-                  0
-                }
+                defaultValue={defaultAmount}
+                key={defaultAmount}
                 {...register(`dibo.${i}.amount`)}
               />
+              <button
+                className="btn btn-error"
+                onClick={() => handleRemove(polapain._id)}
+              >
+                <FaTrash />
+              </button>
             </div>
           ))
         ) : (

@@ -1,5 +1,6 @@
 "use client";
 import { useKhoroch } from "@/context/addKhoroch";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -42,7 +43,14 @@ const AddExpenses3 = () => {
             <div key={polapain._id} className="flex gap-3 items-center">
               <div className="avatar tooltip" data-tip={polapain.name}>
                 <div className="mask mask-squircle w-12">
-                  <img src={polapain.avatar} />
+                  <Image
+                    src={
+                      polapain?.avatar ||
+                      "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
+                    }
+                    width={100}
+                    height={100}
+                  />
                 </div>
               </div>
               <input

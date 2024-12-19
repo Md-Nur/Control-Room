@@ -38,6 +38,7 @@ const SignUp = () => {
       } else {
         toast.success("Welcome chutiya");
         setPolapainAuth(polapain.data);
+        console.log(polapain.data);
       }
       /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {

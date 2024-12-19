@@ -1,6 +1,7 @@
 "use client";
 import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -27,16 +28,20 @@ const Dashboard = () => {
 
   return (
     <section className="flex gap-1 justify-evenly w-full flex-wrap">
-      <div className="max-w-xs">
-        <h1 className="text-center text-4xl font-bold">{polapainAuth.name}</h1>
-        <img
-          className="mask mask-squircle w-24"
+      <div className="max-w-xs space-y-3">
+        <h1 className="text-center text-4xl font-bold my-10">{polapainAuth.name}</h1>
+        <Image
+          width={100}
+          height={100}
+          className="mask mask-squircle w-24 mx-auto"
           src={polapainAuth?.avatar || "/avatar.jpg"}
           alt={polapainAuth.name}
         />
-        <p className="text-lg">
-          Date of Birth: {polapainAuth.dob.split("T")[0]}
-        </p>
+        {polapainAuth?.dob && (
+          <p className="text-lg">
+            Date of Birth: {polapainAuth.dob.split("T")[0]}
+          </p>
+        )}
         <p className="text-lg">Phone: {polapainAuth.phone}</p>
         <p className={"text-lg"}>
           Balance:{" "}
@@ -50,7 +55,7 @@ const Dashboard = () => {
         </p>
       </div>
       <div className="flex flex-col gap-5 w-full max-w-lg">
-        <h1 className="text-3xl font-bold">Recent Expenses</h1>
+        <h1 className="text-3xl font-bold my-10">Recent Expenses</h1>
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
@@ -84,9 +89,10 @@ const Dashboard = () => {
                         </td>
                         <td className="text-red-500">
                           -
-                          {expense.dibo
-                            .find((d) => d.id === polapainAuth._id)
-                            .amount.toFixed(2)}
+                          {expense.dibo?.length &&
+                            expense.dibo
+                              .find((d) => d.id === polapainAuth._id)
+                              .amount.toFixed(2)}
                         </td>
                       </tr>
                     )

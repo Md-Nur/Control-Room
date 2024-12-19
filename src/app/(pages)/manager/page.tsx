@@ -1,6 +1,7 @@
 "use client";
 import { Polapain } from "@/models/Polapain";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -8,10 +9,11 @@ import toast from "react-hot-toast";
 const Manager = () => {
   const [polapains, setPolapains] = useState<Polapain[]>();
   const [loading, setLoading] = useState(true);
+
   const { register, handleSubmit } = useForm<{
-    id: string;
-    amount: number;
+    addTaka: { id: string; amount: number }[];
   }>();
+  const router = useRouter();
   useEffect(() => {
     axios
       .get<Polapain[]>("/api/polapain")
@@ -26,12 +28,12 @@ const Manager = () => {
       });
   }, []);
 
-  const onSubmit = (data: { id: string; amount: number }) => {
+  const onSubmit = (data: { addTaka: { id: string; amount: number }[] }) => {
     axios
-      .post("/api/add-taka", data)
+      .post("/api/add-taka", data.addTaka)
       .then(() => {
-        
         toast.success("Taka added successfully");
+        router.push("/all-balances");
       })
       .catch((err) => {
         toast.error(err.response.data.error);
@@ -43,32 +45,31 @@ const Manager = () => {
       <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
         <h1 className="text-3xl font-bold text-center">Add Taka</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="card-body">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <select {...register("id")} className="select select-bordered">
-              <option>Select</option>
-              {!loading &&
-                polapains?.map((polapain) => (
-                  <option key={polapain._id} value={polapain._id}>
-                    {polapain.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Amount</span>
-            </label>
-            <input
-              type="number"
-              placeholder="Taka"
-              className="input input-bordered"
-              required
-              {...register("amount")}
-            />
-          </div>
+          {!loading &&
+            polapains?.map((polapain, i) => (
+              <div className="flex" key={i}>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">{polapain.name}</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Taka"
+                    className="hidden"
+                    required
+                    value={polapain._id}
+                    {...register(`addTaka.${i}.id`)}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Amount"
+                    className="input input-bordered"
+                    required
+                    {...register(`addTaka.${i}.amount`)}
+                  />
+                </div>
+              </div>
+            ))}
           <div className="form-control mt-6">
             <button className="btn btn-primary">Add</button>
           </div>

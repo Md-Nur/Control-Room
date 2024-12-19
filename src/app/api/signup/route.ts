@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
-  return Response.json({ message: "Pola is not allowed right now" });
+  // return Response.json({ message: "Pola is not allowed right now" });
   await dbConnect();
   const cookieStore = await cookies();
   const polapain = await req.json();
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
     _id: newPola._id,
     name: newPola.name,
     avatar: newPola.avatar,
+    dob: newPola.dob,
     balance: newPola.balance,
   });
 }

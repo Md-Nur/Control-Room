@@ -16,7 +16,7 @@ const khorochSchema = new Schema<Khoroch>({
   date: { type: Date, required: true },
   dise: [{ id: String, amount: Number, name: String, avatar: String }],
   dibo: [{ id: String, amount: Number, name: String, avatar: String }],
-  type: { type: String, required: true, enum: ["food", "others"] },
+  type: { type: String, required: true, enum: ["food", "others", "add-taka"] },
   isApproved: { type: Boolean, default: false },
 });
 

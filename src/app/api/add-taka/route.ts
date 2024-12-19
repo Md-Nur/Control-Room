@@ -1,28 +1,39 @@
 import dbConnect from "@/lib/dbConnect";
+import KhorochModel from "@/models/Khoroch";
 import PolapainModel from "@/models/Polapain";
 
 export async function POST(req: Request) {
   await dbConnect();
-  const {
-    id,
-    amount,
-  }: {
-    id: string;
-    amount: number;
-  } = await req.json();
-  if (!id || !amount) {
-    return Response.json(
-      { error: "Please fill all the fields" },
-      { status: 400 }
-    );
-  }
-  const newTaka = await PolapainModel.findByIdAndUpdate(
-    id,
-    { $inc: { balance: Number(amount) } },
-    { new: true }
-  );
-  if (!newTaka) {
-    return Response.json({ error: "Polapain not found" }, { status: 404 });
-  }
+  const body = await req.json();
+  const addTaka = body as { id: string; amount: number }[];
+
+  const allPolapain = await PolapainModel.find();
+  const newTaka = await KhorochModel.create({
+    amount: addTaka.reduce((acc, curr) => acc + Number(curr.amount), 0),
+    title: "Taka added",
+    date: new Date(),
+    dise: addTaka.map((taka) => ({
+      id: taka.id,
+      name:
+        allPolapain.find((polapain) => polapain._id.toString() === taka.id)
+          ?.name || "",
+      amount: Number(taka.amount),
+      avatar:
+        allPolapain.find((polapain) => polapain._id.toString() === taka.id)
+          ?.avatar || "",
+    })),
+    dibo: [],
+    type: "add-taka",
+    isApproved: true,
+  });
+
+  const takaPromise = addTaka.map(async (taka) => {
+    console.log(taka);
+    await PolapainModel.findByIdAndUpdate(taka.id, {
+      $inc: { balance: Number(taka.amount) },
+    });
+  });
+  await Promise.all(takaPromise);
+
   return Response.json(newTaka);
 }

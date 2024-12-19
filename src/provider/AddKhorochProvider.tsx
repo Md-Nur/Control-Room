@@ -17,7 +17,9 @@ const AddKhorochProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AddKhoroch.Provider value={{ polapains, khroch, setKhoroch }}>
+    <AddKhoroch.Provider
+      value={{ polapains, setPolapains, khroch, setKhoroch }}
+    >
       {children}
     </AddKhoroch.Provider>
   );

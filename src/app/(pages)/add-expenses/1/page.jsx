@@ -47,6 +47,15 @@ const AddExpenses = () => {
             {...register("amount")}
           />
         </div>
+        <div className="flex max-w-72 w-full justify-between">
+          <label className="label">Date</label>
+          <input
+            className="input input-bordered w-40"
+            type="date"
+            defaultValue={new Date().toISOString().split("T")[0]}
+            {...register("date")}
+          />
+        </div>
         <div className="flex w-full max-w-72 justify-between">
           <label className="label">Type</label>
           <select

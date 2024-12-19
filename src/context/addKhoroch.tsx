@@ -4,10 +4,12 @@ import { createContext, useContext } from "react";
 
 const AddKhoroch = createContext<{
   polapains: Polapain[] | null;
+  setPolapains: (polapains: Polapain[]) => void;
   khroch: Khoroch | undefined;
   setKhoroch: (khroch: Khoroch) => void;
 }>({
   polapains: {} as Polapain[],
+  setPolapains: () => {},
   khroch: {} as Khoroch,
   setKhoroch: () => {},
 });
