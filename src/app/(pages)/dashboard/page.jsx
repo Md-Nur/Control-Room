@@ -29,7 +29,9 @@ const Dashboard = () => {
   return (
     <section className="flex gap-1 justify-evenly w-full flex-wrap">
       <div className="max-w-xs space-y-3">
-        <h1 className="text-center text-4xl font-bold my-10">{polapainAuth.name}</h1>
+        <h1 className="text-center text-4xl font-bold my-10">
+          {polapainAuth.name}
+        </h1>
         <Image
           width={100}
           height={100}
@@ -73,9 +75,9 @@ const Dashboard = () => {
                 expenses.map(
                   (expense) =>
                     (expense.dise.find((d) => d.id === polapainAuth._id)
-                      ?.amount ||
+                      ?.amount > 0 ||
                       expense.dibo.find((d) => d.id === polapainAuth._id)
-                        ?.amount) && (
+                        ?.amount > 0) && (
                       <tr key={expense._id}>
                         <td>{expense.title}</td>
                         <td>{expense.amount.toFixed(2)}</td>
@@ -89,10 +91,10 @@ const Dashboard = () => {
                         </td>
                         <td className="text-red-500">
                           -
-                          {expense.dibo?.length &&
+                          {expense?.dibo?.length &&
                             expense.dibo
                               .find((d) => d.id === polapainAuth._id)
-                              .amount.toFixed(2)}
+                              ?.amount.toFixed(2) || 0}
                         </td>
                       </tr>
                     )
