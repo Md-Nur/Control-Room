@@ -16,6 +16,6 @@ export default {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["cyberpunk"],
+    themes: ["night"],
   },
 } satisfies Config;

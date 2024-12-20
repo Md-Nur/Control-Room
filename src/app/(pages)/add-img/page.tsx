@@ -18,6 +18,7 @@ const AddImg = () => {
     title: string;
     date: string;
     img: string;
+    isPrivate?: boolean;
   }
   const onFileChange = () => {
     // console.log(avatarFile.current);
@@ -27,6 +28,7 @@ const AddImg = () => {
     setPreview(URL.createObjectURL(file));
   };
   const onSubmit: SubmitHandler<PhotoData> = async (data) => {
+    // console.log(data);
     setProgress(10);
     const file: File | null =
       (imgFile.current as unknown as HTMLInputElement)?.files?.[0] || null;
@@ -79,6 +81,16 @@ const AddImg = () => {
             required
           />
         </div>
+        <div className="flex w-full max-w-72 justify-between">
+          <label className="label">Date</label>
+          <input
+            className="input input-bordered w-40"
+            type="date"
+            defaultValue={new Date().toISOString().split("T")[0]}
+            {...register("date")}
+            required
+          />
+        </div>
         <label
           htmlFor="avatar"
           className="btn btn-outline w-auto h-auto m-3 p-5"
@@ -111,6 +123,17 @@ const AddImg = () => {
           value={progress}
           max="100"
         ></progress>
+        <div className="form-control">
+          <label className="label cursor-pointer gap-3">
+            <span className="label-text">Private</span>
+            <input
+              type="checkbox"
+              defaultChecked={false}
+              className="checkbox checkbox-primary"
+              {...register("isPrivate")}
+            />
+          </label>
+        </div>
         <button
           className="btn btn-primary m-3 block mx-auto"
           disabled={progress === 100 || !preview}

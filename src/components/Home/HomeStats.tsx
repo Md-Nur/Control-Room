@@ -1,4 +1,5 @@
 "use client";
+import { usePolapainAuth } from "@/context/polapainAuth";
 import { Photos } from "@/models/Photos";
 import axios from "axios";
 import Image from "next/image";
@@ -7,6 +8,7 @@ import toast from "react-hot-toast";
 
 const HomeStats = () => {
   const [images, setImages] = useState<Photos[]>([]);
+  const { polapainAuth } = usePolapainAuth();
   useEffect(() => {
     axios
       .get("/api/img")
@@ -15,36 +17,39 @@ const HomeStats = () => {
         console.log(res.data[0].img);
       })
       .catch((error) => {
-        toast.error(error.response.data.error || "Something went wrong");
+        toast.error(error?.response?.data?.error || "Something went wrong");
       });
   }, []);
   return (
-    <section className="w-full">
+    <section className="w-full my-10">
       <h1 className="text-center text-4xl font-bold my-10">Photos</h1>
       <div className="flex gap-3 flex-wrap justify-center items-baseline w-full">
-        {images.map((image) => (
-          <div
-            className="card bg-base-100 w-72 md:w-96 shadow-xl"
-            key={image._id}
-          >
-            <figure>
-              <Image
-                width={400}
-                height={500}
-                src={image.img}
-                alt={image.title}
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title">{image.title}</h2>
-              <div className="card-actions justify-end">
-                <div className="badge badge-outline">
-                  {image.date.split("T")[0]}
+        {images.map(
+          (image) =>
+            (!image?.isPrivate || polapainAuth) && (
+              <div
+                className="card bg-base-100 w-72 md:w-96 shadow-xl"
+                key={image._id}
+              >
+                <figure>
+                  <Image
+                    width={400}
+                    height={500}
+                    src={image.img}
+                    alt={image.title}
+                  />
+                </figure>
+                <div className="card-body">
+                  <h2 className="card-title">{image.title}</h2>
+                  <div className="card-actions justify-end">
+                    <div className="badge badge-outline">
+                      {image.date.split("T")[0]}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            )
+        )}
       </div>
     </section>
   );
