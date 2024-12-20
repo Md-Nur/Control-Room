@@ -35,10 +35,10 @@ const HomeStats = () => {
                   <figure>
                     <Image
                       width={400}
-                      height={500}
+                      height={400}
                       src={image.img}
                       alt={image.title}
-                      className="max-h-[500px] object-cover"
+                      className="max-h-[400px] object-cover"
                     />
                   </figure>
                   <div className="card-body">
