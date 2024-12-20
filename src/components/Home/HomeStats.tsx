@@ -28,17 +28,14 @@ const HomeStats = () => {
           images.map(
             (image) =>
               (!image?.isPrivate || polapainAuth) && (
-                <div
-                  className="card w-72 md:w-96 shadow-xl"
-                  key={image._id}
-                >
+                <div className="card w-72 md:w-96 shadow-xl" key={image._id}>
                   <figure>
                     <Image
                       width={400}
                       height={400}
                       src={image.img}
                       alt={image.title}
-                      className="max-h-96 object-cover"
+                      className="sm:max-h-96 object-cover"
                     />
                   </figure>
                   <div className="card-body">
