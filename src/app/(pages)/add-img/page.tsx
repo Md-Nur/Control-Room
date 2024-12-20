@@ -49,7 +49,6 @@ const AddImg = () => {
       toast.error("Please select a photo");
       return;
     }
-    data.date = new Date().toISOString();
     try {
       await axios.post("/api/img", data);
       setProgress(100);
