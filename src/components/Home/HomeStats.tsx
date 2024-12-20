@@ -24,32 +24,36 @@ const HomeStats = () => {
     <section className="w-full my-10">
       <h1 className="text-center text-4xl font-bold my-10">Photos</h1>
       <div className="flex gap-3 flex-wrap justify-center items-baseline w-full">
-        {images.map(
-          (image) =>
-            (!image?.isPrivate || polapainAuth) && (
-              <div
-                className="card bg-base-100 w-72 md:w-96 shadow-xl"
-                key={image._id}
-              >
-                <figure>
-                  <Image
-                    width={400}
-                    height={500}
-                    src={image.img}
-                    alt={image.title}
-                    className="max-h-[500px] object-cover"
-                  />
-                </figure>
-                <div className="card-body">
-                  <h2 className="card-title">{image.title}</h2>
-                  <div className="card-actions justify-end">
-                    <div className="badge badge-outline">
-                      {image.date.split("T")[0]}
+        {images.length ? (
+          images.map(
+            (image) =>
+              (!image?.isPrivate || polapainAuth) && (
+                <div
+                  className="card bg-base-100 w-72 md:w-96 shadow-xl"
+                  key={image._id}
+                >
+                  <figure>
+                    <Image
+                      width={400}
+                      height={500}
+                      src={image.img}
+                      alt={image.title}
+                      className="max-h-[500px] object-cover"
+                    />
+                  </figure>
+                  <div className="card-body">
+                    <h2 className="card-title">{image.title}</h2>
+                    <div className="card-actions justify-end">
+                      <div className="badge badge-outline">
+                        {image.date.split("T")[0]}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )
+              )
+          )
+        ) : (
+          <span className="loading loading-bars loading-lg"></span>
         )}
       </div>
     </section>
