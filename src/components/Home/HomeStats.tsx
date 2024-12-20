@@ -23,13 +23,13 @@ const HomeStats = () => {
   return (
     <section className="w-full my-10">
       <h1 className="text-center text-4xl font-bold my-10">Photos</h1>
-      <div className="flex gap-3 flex-wrap justify-center items-baseline w-full">
+      <div className="flex gap-3 flex-wrap justify-center items-center w-full">
         {images.length ? (
           images.map(
             (image) =>
               (!image?.isPrivate || polapainAuth) && (
                 <div
-                  className="card bg-base-100 w-72 md:w-96 shadow-xl"
+                  className="card w-72 md:w-96 shadow-xl"
                   key={image._id}
                 >
                   <figure>
@@ -38,7 +38,7 @@ const HomeStats = () => {
                       height={400}
                       src={image.img}
                       alt={image.title}
-                      className="max-h-[400px] object-cover"
+                      className="max-h-96 object-cover"
                     />
                   </figure>
                   <div className="card-body">
