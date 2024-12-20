@@ -28,6 +28,7 @@ const AddExpenses3 = () => {
       ...data,
       date: new Date(),
     });
+    console.log(data);
     router.push("/add-expenses/4");
   };
 
@@ -50,6 +51,7 @@ const AddExpenses3 = () => {
                     }
                     width={100}
                     height={100}
+                    alt={polapain.name}
                   />
                 </div>
               </div>

@@ -3,18 +3,13 @@ import { useKhoroch } from "@/context/addKhoroch";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaTrash } from "react-icons/fa";
 
 const AddExpense2 = () => {
   const router = useRouter();
-  const { polapains, setPolapains, khroch, setKhoroch } = useKhoroch();
-  const [defaultAmount, setDefaultAmount] = useState(
-    (khroch?.amount && (khroch.amount / polapains.length).toFixed(2)) || 0
-  );
-  const { register, handleSubmit, resetField } = useForm();
+  const { polapains, khroch, setKhoroch } = useKhoroch();
+  const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     let amount = 0;
@@ -29,14 +24,10 @@ const AddExpense2 = () => {
       ...khroch,
       ...data,
     });
+
     router.push("/add-expenses/3");
   };
 
-  const handleRemove = (id) => {
-    setPolapains((prev) => prev.filter((p) => p._id !== id));
-    setDefaultAmount((khroch.amount / (polapains.length - 1)).toFixed(2));
-    resetField("dibo");
-  };
   return (
     <div className="w-full max-w-3xl mx-auto px-5">
       <h1 className="text-center text-3xl font-bold my-10">Dite Hobe</h1>
@@ -84,16 +75,13 @@ const AddExpense2 = () => {
                 type="number"
                 placeholder="Amount"
                 step="any"
-                defaultValue={defaultAmount}
-                key={defaultAmount}
+                defaultValue={
+                  (khroch?.amount &&
+                    (khroch.amount / polapains.length).toFixed(2)) ||
+                  0
+                }
                 {...register(`dibo.${i}.amount`)}
               />
-              <button
-                className="btn btn-error"
-                onClick={() => handleRemove(polapain._id)}
-              >
-                <FaTrash />
-              </button>
             </div>
           ))
         ) : (

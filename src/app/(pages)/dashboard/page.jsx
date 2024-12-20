@@ -91,10 +91,11 @@ const Dashboard = () => {
                         </td>
                         <td className="text-red-500">
                           -
-                          {expense?.dibo?.length &&
+                          {(expense?.dibo?.length &&
                             expense.dibo
                               .find((d) => d.id === polapainAuth._id)
-                              ?.amount.toFixed(2) || 0}
+                              ?.amount.toFixed(2)) ||
+                            0}
                         </td>
                       </tr>
                     )

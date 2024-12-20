@@ -2,7 +2,6 @@
 import { Khoroch } from "@/models/Khoroch";
 import axios from "axios";
 import Image from "next/image";
-// import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -80,7 +79,7 @@ const Expenses = () => {
                                   key={i}
                                 >
                                   <div className="mask mask-squircle w-12">
-                                    <img
+                                    <Image
                                       src={
                                         pola?.avatar ||
                                         "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"

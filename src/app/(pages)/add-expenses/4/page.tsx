@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 const AddExpenses4 = () => {
   const { khroch, polapains } = useKhoroch();
   const router = useRouter();
+  // console.log(khroch);
   const handleSubmit = () => {
     toast.loading("Submitting...");
     axios

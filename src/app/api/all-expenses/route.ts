@@ -11,11 +11,14 @@ export async function GET() {
 export async function POST(req: Request) {
   const khoroch = await req.json();
   khoroch.amount = Number(khoroch.amount);
+
   for (let i = 0; i < khoroch.dise.length; i++) {
     khoroch.dise[i].amount = Number(khoroch.dise[i].amount);
     khoroch.dibo[i].amount = Number(khoroch.dibo[i].amount);
   }
-  // console.log(khoroch);
+
+  console.log(khoroch);
+  
   const newKhoroch = await KhorochModel.create(khoroch);
   khoroch.dise.forEach(async (dise: { id: string; amount: number }) => {
     await PolapainModel.findByIdAndUpdate(dise.id, {

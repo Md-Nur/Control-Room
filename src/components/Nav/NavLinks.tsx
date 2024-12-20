@@ -35,6 +35,7 @@ const NavLinks = () => {
           <NavRoute name="all expenses" route="/all-expenses" />
           <NavRoute name="add expenses" route="/add-expenses/1" />
           <NavRoute name="all balance" route="/all-balance" />
+          <NavRoute name="photos" route="/add-img" />
           {polapainAuth?.isManager && <NavRoute name="manager" />}
           <li className="list-none">
             <button onClick={handleLogout}>LOGOUT</button>

@@ -51,7 +51,7 @@ const SignUp = () => {
   };
 
   const onFileChange = () => {
-    console.log(avatarFile.current);
+    // console.log(avatarFile.current);
     const file: File | null =
       (avatarFile.current as unknown as HTMLInputElement)?.files?.[0] || null;
     if (!file) return;

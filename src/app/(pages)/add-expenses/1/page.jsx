@@ -1,13 +1,14 @@
 "use client";
 
 import { useKhoroch } from "@/context/addKhoroch";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const AddExpenses = () => {
   const router = useRouter();
-  const { setKhoroch } = useKhoroch();
+  const { polapains, setPolapains, setKhoroch } = useKhoroch();
   const { handleSubmit, register } = useForm();
 
   const onSubmit = async (data) => {
@@ -20,7 +21,9 @@ const AddExpenses = () => {
       router.push("/add-expenses/2");
     }
   };
-
+  const handleRemove = (id) => {
+    setPolapains((prev) => prev.filter((p) => p._id !== id));
+  };
   return (
     <div className="w-full">
       <h1 className="text-4xl font-bold text-center">Add Khoroch</h1>
@@ -69,6 +72,37 @@ const AddExpenses = () => {
             <option value="food">Food</option>
             <option value="others">Other</option>
           </select>
+        </div>
+        <div className="flex justify-center items-center gap-3 my-3">
+          {polapains?.length ? (
+            polapains.map((pola) => (
+              <div className="indicator" key={pola._id}>
+                <span
+                  onClick={() => {
+                    handleRemove(pola._id);
+                  }}
+                  className="indicator-item badge badge-error cursor-pointer"
+                >
+                  X
+                </span>
+                <div className="avatar">
+                  <div className="mask mask-squircle w-14">
+                    <Image
+                      width={100}
+                      height={100}
+                      src={
+                        pola?.avatar ||
+                        "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
+                      }
+                      alt={pola.name}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <span className="loading loading-bars loading-xs"></span>
+          )}
         </div>
         <button className="btn btn-primary" type="submit">
           Next

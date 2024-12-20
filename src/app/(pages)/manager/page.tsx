@@ -33,7 +33,7 @@ const Manager = () => {
       .post("/api/add-taka", data.addTaka)
       .then(() => {
         toast.success("Taka added successfully");
-        router.push("/all-balances");
+        router.push("/all-balance");
       })
       .catch((err) => {
         toast.error(err.response.data.error);
@@ -42,7 +42,7 @@ const Manager = () => {
 
   return (
     <section className="flex flex-wrap">
-      <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+      <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl my-10">
         <h1 className="text-3xl font-bold text-center">Add Taka</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="card-body">
           {!loading &&
@@ -66,6 +66,7 @@ const Manager = () => {
                     className="input input-bordered"
                     required
                     {...register(`addTaka.${i}.amount`)}
+                    defaultValue={0}
                   />
                 </div>
               </div>
