@@ -51,7 +51,7 @@ const Expenses = () => {
                       <td>
                         <div className="flex gap-1 flex-wrap">
                           {expense.dibo.map(
-                            (pola, i) =>
+                            (pola) =>
                               pola.amount > 0 && (
                                 <div
                                   className="avatar tooltip"
