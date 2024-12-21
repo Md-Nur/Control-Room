@@ -56,7 +56,7 @@ const Dashboard = () => {
           </span>
         </p>
       </div>
-      <div className="flex flex-col gap-5 w-full max-w-lg">
+      <div className="flex flex-col gap-5 w-full max-w-xl p-3">
         <h1 className="text-3xl font-bold my-10">Recent Expenses</h1>
         <div className="overflow-x-auto">
           <table className="table w-full">
