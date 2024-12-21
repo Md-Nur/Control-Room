@@ -22,7 +22,7 @@ const Expenses = () => {
   return (
     <section className="w-full px-5">
       <h1 className="text-4xl text-center my-10 font-bold">Expenses</h1>
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto w-full my-10 max-w-7xl mx-auto">
         <table className="table">
           <thead>
             <tr className="hover">
@@ -35,13 +35,19 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {expenses.length &&
+            {expenses.length ? (
               expenses?.map(
                 (expense, i) =>
                   expense.type != "add-taka" && (
                     <tr className="hover" key={i}>
                       <td>{expense.title}</td>
-                      <td>{new Date(expense.date).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(expense.date)
+                          .toUTCString()
+                          .split(" ")
+                          .slice(0, 4)
+                          .join(" ")}
+                      </td>
                       <td>
                         <div className="flex gap-1 flex-wrap">
                           {expense.dibo.map(
@@ -98,7 +104,12 @@ const Expenses = () => {
                       <td>{expense.amount}</td>
                     </tr>
                   )
-              )}
+              )
+            ) : (
+              <div className="flex w-full justify-center items-center">
+                <span className="loading loading-bars loading-lg"></span>
+              </div>
+            )}
           </tbody>
         </table>
       </div>

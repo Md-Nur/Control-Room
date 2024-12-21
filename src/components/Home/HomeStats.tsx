@@ -42,7 +42,11 @@ const HomeStats = () => {
                     <h2 className="card-title">{image.title}</h2>
                     <div className="card-actions justify-end">
                       <div className="badge badge-outline">
-                        {image.date.split("T")[0]}
+                        {new Date(image.date)
+                          .toUTCString()
+                          .split(" ")
+                          .slice(0, 4)
+                          .join(" ")}
                       </div>
                     </div>
                   </div>

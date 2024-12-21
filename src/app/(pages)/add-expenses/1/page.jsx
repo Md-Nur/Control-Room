@@ -26,10 +26,10 @@ const AddExpenses = () => {
   };
   return (
     <div className="w-full">
-      <h1 className="text-4xl font-bold text-center">Add Khoroch</h1>
+      <h1 className="text-4xl font-bold text-center my-10">Add Khoroch</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex justify-center flex-col p-5 items-center flex-wrap gap-3"
+        className="flex justify-center flex-col py-5 px-2 items-center flex-wrap gap-3"
       >
         <div className="flex w-full max-w-72 justify-between">
           <label className="label">Title</label>

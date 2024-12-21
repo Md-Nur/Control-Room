@@ -4,7 +4,6 @@ import PolapainModel from "@/models/Polapain";
 export async function GET() {
   const allKhoroch = await KhorochModel.find().sort({ date: -1 });
   // aggrigation pipeline for polapain name and avatar for each dise and dibo
-  
   return Response.json(allKhoroch);
 }
 

@@ -12,6 +12,7 @@ const AddExpenses3 = () => {
   const { polapains, khroch, setKhoroch } = useKhoroch();
   const { handleSubmit, register } = useForm();
   const [managerDise, setManagerDise] = useState(0);
+
   const onSubmit = (data) => {
     let amount = Number(managerDise || 0);
     data.dise.forEach((d) => {
@@ -22,13 +23,11 @@ const AddExpenses3 = () => {
       toast.error("Amount is not equal to total amount");
       return;
     }
-
     setKhoroch({
       ...khroch,
       ...data,
-      date: new Date(),
     });
-    console.log(data);
+    // console.log(data);
     router.push("/add-expenses/4");
   };
 

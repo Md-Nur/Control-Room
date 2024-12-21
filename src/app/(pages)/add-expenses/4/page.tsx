@@ -36,7 +36,7 @@ const AddExpenses4 = () => {
           Type: {khroch?.type || "Type Nai"}
         </p>
         <p className="text-center text-lg">
-          Date: {khroch?.date.toDateString() || "Date Nai"}
+          Date: {khroch?.date ? khroch.date.toString() : "Date Nai"}
         </p>
       </div>
       <table className="table rounded bg-base-300 max-w-72 mt-10">
