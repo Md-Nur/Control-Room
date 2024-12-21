@@ -16,8 +16,6 @@ export async function POST(req: Request) {
     khoroch.dibo[i].amount = Number(khoroch.dibo[i].amount);
   }
 
-  console.log(khoroch);
-  
   const newKhoroch = await KhorochModel.create(khoroch);
   khoroch.dise.forEach(async (dise: { id: string; amount: number }) => {
     await PolapainModel.findByIdAndUpdate(dise.id, {

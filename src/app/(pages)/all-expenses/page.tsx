@@ -55,15 +55,12 @@ const Expenses = () => {
                               pola.amount > 0 && (
                                 <div
                                   className="avatar tooltip"
-                                  data-tip={`name: ${pola.name} amount: ${pola.amount}`}
-                                  key={i}
+                                  data-tip={`Name: ${pola.name}; Amount: ${pola.amount}`}
+                                  key={pola.id}
                                 >
                                   <div className="mask mask-squircle w-12">
                                     <Image
-                                      src={
-                                        pola?.avatar ||
-                                        "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
-                                      }
+                                      src={pola?.avatar || "/avatar.jpg"}
                                       alt={pola.name}
                                       width={100}
                                       height={100}
@@ -76,27 +73,41 @@ const Expenses = () => {
                       </td>
                       <td className="flex gap-2">
                         <div className="flex gap-1 flex-wrap">
-                          {expense.dise.map(
-                            (pola, i) =>
-                              pola.amount > 0 && (
-                                <div
-                                  className="avatar tooltip"
-                                  data-tip={`name: ${pola.name} amount: ${pola.amount}`}
-                                  key={i}
-                                >
-                                  <div className="mask mask-squircle w-12">
-                                    <Image
-                                      src={
-                                        pola?.avatar ||
-                                        "https://i.ibb.co.com/2hCrWYB/470181383-1221349485635395-209613915809854821-n.jpg"
-                                      }
-                                      alt={pola.name}
-                                      width={100}
-                                      height={100}
-                                    />
+                          {expense.dise.reduce((a, p) => a + p.amount, 0) ? (
+                            expense.dise.map(
+                              (pola, i) =>
+                                pola.amount > 0 && (
+                                  <div
+                                    className="avatar tooltip"
+                                    data-tip={`Name: ${pola.name}; Amount: ${pola.amount}`}
+                                    key={i}
+                                  >
+                                    <div className="mask mask-squircle w-12">
+                                      <Image
+                                        src={pola?.avatar || "/avatar.jpg"}
+                                        alt={pola.name}
+                                        width={100}
+                                        height={100}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                              )
+                                )
+                            )
+                          ) : (
+                            <div
+                              className="avatar tooltip"
+                              data-tip={`Manager; Amount: ${expense.amount}`}
+                              key={i}
+                            >
+                              <div className="mask mask-squircle w-12">
+                                <Image
+                                  src={"/logo.jpg"}
+                                  alt="Manager"
+                                  width={100}
+                                  height={100}
+                                />
+                              </div>
+                            </div>
                           )}
                         </div>
                       </td>
@@ -106,9 +117,11 @@ const Expenses = () => {
                   )
               )
             ) : (
-              <div className="flex w-full justify-center items-center">
-                <span className="loading loading-bars loading-lg"></span>
-              </div>
+              <tr>
+                <td colSpan={6} className="text-center">
+                  <span className="loading loading-bars loading-lg"></span>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

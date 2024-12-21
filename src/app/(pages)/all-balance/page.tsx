@@ -38,7 +38,7 @@ const Balance = () => {
               polapain?.map((pola, i) => (
                 <tr key={i} className="hover">
                   <td>{pola.name}</td>
-                  <td>{pola.balance}</td>
+                  <td>{pola.balance.toFixed(2)}</td>
                 </tr>
               ))
             ) : (
@@ -55,7 +55,7 @@ const Balance = () => {
           <tfoot>
             <tr>
               <td>Manager</td>
-              <td>{polapain.reduce((acc, pola) => acc + pola.balance, 0)}</td>
+              <td>{polapain.reduce((acc, pola) => acc + pola.balance, 0).toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
