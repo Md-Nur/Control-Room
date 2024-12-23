@@ -37,9 +37,9 @@ const Expenses = () => {
           <tbody>
             {expenses.length ? (
               expenses?.map(
-                (expense, i) =>
+                (expense) =>
                   expense.type != "add-taka" && (
-                    <tr className="hover" key={i}>
+                    <tr className="hover" key={expense._id}>
                       <td>{expense.title}</td>
                       <td>
                         {new Date(expense.date)
@@ -75,12 +75,12 @@ const Expenses = () => {
                         <div className="flex gap-1 flex-wrap">
                           {expense.dise.reduce((a, p) => a + p.amount, 0) ? (
                             expense.dise.map(
-                              (pola, i) =>
+                              (pola) =>
                                 pola.amount > 0 && (
                                   <div
                                     className="avatar tooltip"
                                     data-tip={`Name: ${pola.name}; Amount: ${pola.amount}`}
-                                    key={i}
+                                    key={pola.id}
                                   >
                                     <div className="mask mask-squircle w-12">
                                       <Image
@@ -97,7 +97,6 @@ const Expenses = () => {
                             <div
                               className="avatar tooltip"
                               data-tip={`Manager; Amount: ${expense.amount}`}
-                              key={i}
                             >
                               <div className="mask mask-squircle w-12">
                                 <Image

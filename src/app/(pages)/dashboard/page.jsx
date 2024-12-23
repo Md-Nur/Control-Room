@@ -82,7 +82,13 @@ const Dashboard = () => {
                         <td>{expense.title}</td>
                         <td>{expense.amount.toFixed(2)}</td>
                         <td className="capitalize">{expense.type}</td>
-                        <td>{new Date(expense.date).toLocaleDateString()}</td>
+                        <td>
+                          {new Date(expense.date)
+                            .toUTCString()
+                            .split(" ")
+                            .slice(0, 4)
+                            .join(" ")}
+                        </td>
                         <td className="text-green-500">
                           +
                           {expense.dise
