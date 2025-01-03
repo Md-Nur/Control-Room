@@ -4,6 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Avatars from "./avatars";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Khoroch[]>([]);
@@ -50,49 +51,13 @@ const Expenses = () => {
                       </td>
                       <td>
                         <div className="flex gap-1 flex-wrap">
-                          {expense.dibo.map(
-                            (pola) =>
-                              pola.amount > 0 && (
-                                <div
-                                  className="avatar tooltip"
-                                  data-tip={`Name: ${pola.name}; Amount: ${pola.amount}`}
-                                  key={pola.id}
-                                >
-                                  <div className="mask mask-squircle w-12">
-                                    <Image
-                                      src={pola?.avatar || "/avatar.jpg"}
-                                      alt={pola.name}
-                                      width={100}
-                                      height={100}
-                                    />
-                                  </div>
-                                </div>
-                              )
-                          )}
+                          <Avatars polapains={expense.dibo} />
                         </div>
                       </td>
-                      <td className="flex gap-2">
+                      <td>
                         <div className="flex gap-1 flex-wrap">
                           {expense.dise.reduce((a, p) => a + p.amount, 0) ? (
-                            expense.dise.map(
-                              (pola) =>
-                                pola.amount > 0 && (
-                                  <div
-                                    className="avatar tooltip"
-                                    data-tip={`Name: ${pola.name}; Amount: ${pola.amount}`}
-                                    key={pola.id}
-                                  >
-                                    <div className="mask mask-squircle w-12">
-                                      <Image
-                                        src={pola?.avatar || "/avatar.jpg"}
-                                        alt={pola.name}
-                                        width={100}
-                                        height={100}
-                                      />
-                                    </div>
-                                  </div>
-                                )
-                            )
+                            <Avatars polapains={expense.dise} />
                           ) : (
                             <div
                               className="avatar tooltip"
