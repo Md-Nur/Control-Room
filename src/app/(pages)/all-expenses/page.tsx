@@ -31,8 +31,8 @@ const Expenses = () => {
               <th>Date</th>
               <th>Polapains Taka Dibo</th>
               <th>Polapain Taka Dise</th>
-              <th>Category</th>
-              <th>Total Amount</th>
+              <th>Type</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
