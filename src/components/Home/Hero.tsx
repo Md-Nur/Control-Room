@@ -12,7 +12,7 @@ const Hero = () => {
         <div className="max-w-md">
           <h1 className="mb-5 text-5xl font-bold">Control Room</h1>
           <p className="mb-5">
-            Jani na ki dimu. Bishal kicu ekta deya lagbo bani te mozammel
+            Jani na ki dimu. Bishal kicu ekta deya lagbo bani te Mozammel
           </p>
         </div>
       </div>
