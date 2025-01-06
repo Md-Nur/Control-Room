@@ -1,6 +1,7 @@
 "use client";
 import { Polapain } from "@/models/Polapain";
 import axios from "axios";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -28,6 +29,7 @@ const Balance = () => {
         <table className="table">
           <thead>
             <tr>
+              <th>Avatar</th>
               <th>Name</th>
               <th>Balance</th>
             </tr>
@@ -37,16 +39,32 @@ const Balance = () => {
               polapain.length &&
               polapain?.map((pola, i) => (
                 <tr key={i} className="hover">
+                  <td>
+                    <div className="avatar">
+                      <div className="w-12 rounded-full">
+                        <Image
+                          src={pola?.avatar || "/avatar.jpg"}
+                          alt={pola.name}
+                          width={50}
+                          height={50}
+                          className="rounded-full"
+                        />
+                      </div>
+                    </div>
+                  </td>
                   <td>{pola.name}</td>
-                  <td>{pola.balance.toFixed(2)}</td>
+                  <td
+                    className={
+                      pola.balance < 0 ? "text-red-500" : "text-green-500"
+                    }
+                  >
+                    {pola.balance.toFixed(2)}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td>
-                  <span className="loading loading-bars loading-md"></span>
-                </td>
-                <td>
+                <td colSpan={3} className="w-full text-center">
                   <span className="loading loading-bars loading-md"></span>
                 </td>
               </tr>
@@ -54,8 +72,25 @@ const Balance = () => {
           </tbody>
           <tfoot>
             <tr>
+              <td>
+                <div className="avatar">
+                  <div className="w-12 rounded-full">
+                    <Image
+                      src="/logo.jpg"
+                      alt="Manager"
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                  </div>
+                </div>
+              </td>
               <td>Manager</td>
-              <td>{polapain.reduce((acc, pola) => acc + pola.balance, 0).toFixed(2)}</td>
+              <td>
+                {polapain
+                  .reduce((acc, pola) => acc + pola.balance, 0)
+                  .toFixed(2)}
+              </td>
             </tr>
           </tfoot>
         </table>

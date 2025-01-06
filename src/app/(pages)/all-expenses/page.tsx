@@ -82,7 +82,7 @@ const Expenses = () => {
               )
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={6} className="w-full text-center">
                   <span className="loading loading-bars loading-lg"></span>
                 </td>
               </tr>
