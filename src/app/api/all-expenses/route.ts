@@ -2,7 +2,7 @@ import KhorochModel from "@/models/Khoroch";
 import PolapainModel from "@/models/Polapain";
 
 export async function GET() {
-  const allKhoroch = await KhorochModel.find().sort({ date: -1 });
+  const allKhoroch = await KhorochModel.find().sort({ date: -1, _id: -1 });
   // aggrigation pipeline for polapain name and avatar for each dise and dibo
   return Response.json(allKhoroch);
 }
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       $inc: { balance: dise.amount },
     });
   });
+
   khoroch.dibo.forEach(async (dibo: { id: string; amount: number }) => {
     await PolapainModel.findByIdAndUpdate(dibo.id, {
       $inc: { balance: -dibo.amount },

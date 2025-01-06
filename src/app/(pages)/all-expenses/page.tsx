@@ -28,7 +28,7 @@ const Expenses = () => {
           <thead>
             <tr className="hover">
               <th>Title</th>
-              <th>Date</th>
+              <th>Day & Date</th>
               <th>Polapains Taka Dibo</th>
               <th>Polapain Taka Dise</th>
               <th>Type</th>
