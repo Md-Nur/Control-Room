@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const sort = url.searchParams.get("sort");
   console.log(sort);
 
-  let pipleline = [];
+  const pipleline = [];
   if (sort === "date") {
     pipleline.push({ $sort: { date: -1 } });
   } else if (sort === "_id") {
