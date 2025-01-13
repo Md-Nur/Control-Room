@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [sort, setSort] = useState("");
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`/api/all-expenses?sort=${sort}`)
       .then((res) => {

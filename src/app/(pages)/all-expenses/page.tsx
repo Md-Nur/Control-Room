@@ -9,7 +9,10 @@ import Avatars from "./avatars";
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Khoroch[]>([]);
   const [sort, setSort] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`/api/all-expenses?sort=${sort}`)
       .then((res) => {
@@ -17,6 +20,9 @@ const Expenses = () => {
       })
       .catch((err) => {
         toast.error(err?.response?.data?.error || "Something went wrong");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [sort]);
 
@@ -50,7 +56,7 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {expenses.length ? (
+            {!loading || expenses.length ? (
               expenses?.map(
                 (expense) =>
                   expense.type != "add-taka" && (
