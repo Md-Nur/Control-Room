@@ -56,7 +56,7 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {!loading || expenses.length ? (
+            {!loading && expenses.length ? (
               expenses?.map(
                 (expense) =>
                   expense.type != "add-taka" && (
