@@ -8,21 +8,35 @@ import Avatars from "./avatars";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Khoroch[]>([]);
+  const [sort, setSort] = useState<string>("");
   useEffect(() => {
     axios
-      .get("/api/all-expenses")
+      .get(`/api/all-expenses?sort=${sort}`)
       .then((res) => {
         setExpenses(res.data);
       })
       .catch((err) => {
         toast.error(err?.response?.data?.error || "Something went wrong");
-        // console.log(err);
       });
-  }, []);
+  }, [sort]);
 
   return (
     <section className="w-full px-5">
       <h1 className="text-4xl text-center my-10 font-bold">Expenses</h1>
+      <div className="w-full flex items-center justify-between gap-3">
+        <select
+          onChange={(e) => {
+            setSort(e.target.value);
+          }}
+          className="select select-bordered w-32 max-w-xs mx-auto"
+        >
+          <option disabled selected>
+            Sort
+          </option>
+          <option value="date">Date</option>
+          <option value="_id">Added</option>
+        </select>
+      </div>
       <div className="overflow-x-auto w-full my-10 max-w-7xl mx-auto">
         <table className="table">
           <thead>

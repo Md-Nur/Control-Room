@@ -1,10 +1,24 @@
 import KhorochModel from "@/models/Khoroch";
 import PolapainModel from "@/models/Polapain";
+import { NextRequest } from "next/server";
 
-export async function GET() {
-  const allKhoroch = await KhorochModel.find().sort({ date: -1, _id: -1 });
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const sort = url.searchParams.get("sort");
+  console.log(sort);
+
+  let pipleline = [];
+  if (sort === "date") {
+    pipleline.push({ $sort: { date: -1 } });
+  } else if (sort === "_id") {
+    pipleline.push({ $sort: { _id: -1 } });
+  } else {
+    pipleline.push({ $sort: { date: -1, _id: -1 } });
+  }
+  const sortedKhoroch = await KhorochModel.aggregate(pipleline);
+
   // aggrigation pipeline for polapain name and avatar for each dise and dibo
-  return Response.json(allKhoroch);
+  return Response.json(sortedKhoroch);
 }
 
 export async function POST(req: Request) {

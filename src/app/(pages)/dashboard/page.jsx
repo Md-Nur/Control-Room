@@ -9,10 +9,11 @@ const Dashboard = () => {
   const { polapainAuth } = usePolapainAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState("");
 
   useEffect(() => {
     axios
-      .get("/api/all-expenses")
+      .get(`/api/all-expenses?sort=${sort}`)
       .then((res) => {
         setExpenses(res.data);
       })
@@ -24,13 +25,13 @@ const Dashboard = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [sort]);
 
   return (
     <section className="flex gap-1 justify-evenly w-full flex-wrap">
       <div className="max-w-xs space-y-3">
         <h1 className="text-center text-4xl font-bold my-10">
-          {polapainAuth.name}
+          {polapainAuth?.name}
         </h1>
         <Image
           width={100}
@@ -56,8 +57,24 @@ const Dashboard = () => {
           </span>
         </p>
       </div>
-      <div className="flex flex-col gap-5 w-full max-w-2xl p-3">
-        <h1 className="text-3xl font-bold my-10">Recent Expenses</h1>
+      <div className="flex flex-col gap-5 w-full max-w-3xl p-3">
+        <h1 className="text-3xl font-bold my-10 text-center">
+          Recent Expenses
+        </h1>
+        <div className="w-full flex items-center justify-between gap-3">
+          <select
+            onChange={(e) => {
+              setSort(e.target.value);
+            }}
+            className="select select-bordered w-32 max-w-xs mx-auto"
+          >
+            <option disabled selected>
+              Sort
+            </option>
+            <option value="date">Date</option>
+            <option value="_id">Added</option>
+          </select>
+        </div>
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
