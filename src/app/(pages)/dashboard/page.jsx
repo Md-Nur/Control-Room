@@ -84,8 +84,8 @@ const Dashboard = () => {
                 <th>Amount</th>
                 <th>Type</th>
                 <th>Day & Date</th>
-                <th>Disi</th>
-                <th>Dimu</th>
+                <th>Taka Add</th>
+                <th>Taka Gone</th>
               </tr>
             </thead>
             <tbody>
