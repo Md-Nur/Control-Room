@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   }
 
   const token = jwt.sign({ _id: polapain._id }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
+    expiresIn: "30d",
   });
 
   cookieStore.set("token", token, {
