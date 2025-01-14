@@ -44,5 +44,7 @@ export async function POST(req: Request) {
     avatar: polapain.avatar,
     balance: polapain.balance,
     isManager: polapain.isManager,
+    phone: polapain.phone,
+    dob: polapain.dob,
   });
 }
