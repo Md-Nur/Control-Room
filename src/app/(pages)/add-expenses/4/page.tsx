@@ -1,5 +1,6 @@
 "use client";
 import { useKhoroch } from "@/context/addKhoroch";
+import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ import toast from "react-hot-toast";
 const AddExpenses4 = () => {
   const { khroch, polapains } = useKhoroch();
   const router = useRouter();
+  const { setPolapainAuth } = usePolapainAuth();
   // console.log(khroch);
   const handleSubmit = () => {
     toast.loading("Submitting...");
@@ -16,7 +18,10 @@ const AddExpenses4 = () => {
       .then(() => {
         toast.dismiss();
         toast.success("Submitted");
-        router.push("/all-expenses");
+        router.push("/all-balance");
+        axios.get("jwt").then((res) => {
+          setPolapainAuth(res.data);
+        });
       })
       .catch((err) => {
         toast.dismiss();
