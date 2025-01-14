@@ -35,9 +35,9 @@ const Dashboard = () => {
           {polapainAuth?.name}
         </h1>
         <Image
-          width={100}
-          height={100}
-          className="mask mask-squircle w-24 mx-auto"
+          width={300}
+          height={300}
+          className="mask mask-squircle w-72 mx-auto"
           src={polapainAuth?.avatar || "/avatar.jpg"}
           alt={polapainAuth.name}
         />
