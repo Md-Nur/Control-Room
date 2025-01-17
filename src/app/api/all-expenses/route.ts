@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const sort = url.searchParams.get("sort");
-  console.log(sort);
+  // console.log(sort);
 
   const pipleline = [];
   if (sort === "date") {
