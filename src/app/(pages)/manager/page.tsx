@@ -67,6 +67,7 @@ const Manager = () => {
                     required
                     {...register(`addTaka.${i}.amount`)}
                     defaultValue={0}
+                    step={0.01}
                   />
                 </div>
               </div>
