@@ -28,7 +28,6 @@ export async function POST(req: Request) {
   });
 
   const takaPromise = addTaka.map(async (taka) => {
-    console.log(taka);
     await PolapainModel.findByIdAndUpdate(taka.id, {
       $inc: { balance: Number(taka.amount) },
     });
