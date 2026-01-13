@@ -34,7 +34,7 @@ const RecentActivity = () => {
         const params: Record<string, string> = {
           sort: "date",
           limit: "5",
-          page: "1",
+          page: currentPage.toString(),
           excludeType: "Point Transfer",
           skipStats: "true"
         };

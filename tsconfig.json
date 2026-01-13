@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -19,7 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
@@ -28,7 +34,13 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/(pages)/dashboard/page.jsx",
-    "src/app/(pages)/add-expenses/1/page.jsx"
-, "src/app/(pages)/add-expenses/2/page.jsx", "src/app/(pages)/add-expenses/4/page.tsx", "src/app/(pages)/add-expenses/3/page.jsx"  ],
-  "exclude": ["node_modules"]
+    "src/app/(pages)/add-expenses/1/page.jsx",
+    "src/app/(pages)/add-expenses/2/page.jsx",
+    "src/app/(pages)/add-expenses/4/page.tsx",
+    "src/app/(pages)/add-expenses/3/page.jsx",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
