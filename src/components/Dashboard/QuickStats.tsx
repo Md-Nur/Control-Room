@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Polapain } from "@/models/Polapain";
-import { Khoroch } from "@/models/Khoroch";
 
 import CreativeLoader from "@/components/CreativeLoader";
 

@@ -62,10 +62,12 @@ const ProfilePage = () => {
           });
 
           setIsSubscribed(true);
-          toast.success("Push notifications enabled!");
-      } catch (error: any) {
-          console.error(error);
-          toast.error(error?.message || "Failed to subscribe");
+        toast.success("Push notifications enabled!");
+    } catch (_error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = _error as any;
+        console.error(error);
+        toast.error(error?.message || "Failed to subscribe");
       } finally {
           setSubscriptionLoading(false);
       }
@@ -80,11 +82,11 @@ const ProfilePage = () => {
               await subscription.unsubscribe();
               // We could also call backend to remove it, but our utility handles expired subs
               setIsSubscribed(false);
-              toast.success("Push notifications disabled");
-          }
-      } catch (error) {
-          toast.error("Failed to unsubscribe");
-      } finally {
+            toast.success("Push notifications disabled");
+        }
+    } catch {
+        toast.error("Failed to unsubscribe");
+    } finally {
           setSubscriptionLoading(false);
       }
   }
@@ -145,10 +147,10 @@ const ProfilePage = () => {
               <h2 className="card-title text-2xl font-bold mb-4">Edit Profile</h2>
               
               <div className="avatar mb-4 group relative cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                  <div className="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden">
-                      <img src={preview || "/avatar.jpg"} alt="avatar" className="object-cover" />
+                  <div className="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden relative">
+                      <Image src={preview || "/avatar.jpg"} alt={polapainAuth.name} fill className="object-cover" />
                       
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                           <span className="text-white text-sm font-bold">Change</span>
                       </div>
                   </div>

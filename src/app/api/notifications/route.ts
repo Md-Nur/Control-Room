@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       .populate("sender", "name avatar"); // Populate sender name/avatar for UI
     
     return NextResponse.json(notifications);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
   }
 }
@@ -48,7 +48,7 @@ export async function PUT(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update notification" }, { status: 500 });
   }
 }

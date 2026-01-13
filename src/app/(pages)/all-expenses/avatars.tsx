@@ -1,10 +1,4 @@
 import Image from "next/image";
-interface Pola {
-  id: string;
-  amount: number;
-  avatar: string;
-  name: string;
-}
 const Avatars = ({
   polapains,
 }: {

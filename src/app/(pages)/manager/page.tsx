@@ -278,7 +278,7 @@ const Manager = () => {
             ></path>
           </svg>
           <span>
-            💡 Tip: Use "Same for All" to quickly add the same amount to
+            💡 Tip: Use &quot;Same for All&quot; to quickly add the same amount to
             everyone, or enter individual amounts for each person.
           </span>
         </div>

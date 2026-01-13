@@ -21,7 +21,7 @@ interface FormData {
 
 const AddExpenses = () => {
   const router = useRouter();
-  const { polapains, setKhoroch } = useKhoroch();
+  const { polapains } = useKhoroch();
   const { setPolapainAuth } = usePolapainAuth();
   const { handleSubmit, register, watch, setValue } = useForm<FormData>({
     defaultValues: {

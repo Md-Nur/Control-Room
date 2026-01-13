@@ -25,7 +25,7 @@ const MealSchema: Schema = new Schema(
 );
 
 // Ensure one record per user per day
-// @ts-ignore
+// @ts-expect-error - Mongoose types for index are tricky sometimes
 MealSchema.index({ userId: 1, date: 1 }, { unique: true });
 
 export const Meal: Model<IMeal> =

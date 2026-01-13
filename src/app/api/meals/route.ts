@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     );
     
     return NextResponse.json(meal);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to save meal" }, { status: 500 });
   }
 }
@@ -65,7 +65,7 @@ export async function DELETE(req: NextRequest) {
     await Meal.findOneAndDelete({ userId, date: normalizedDate });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete meal" }, { status: 500 });
   }
 }

@@ -4,7 +4,6 @@ import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Avatars from "./avatars";
 import CreativeLoader from "@/components/CreativeLoader";
 
 const Expenses = () => {
@@ -52,8 +51,10 @@ const Expenses = () => {
       setExpenses(res.data.expenses);
       setTotalItems(res.data.meta.total);
       setStats(res.data.stats);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.error || "Something went wrong");
+    } catch (_err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const error = _err as any;
+      toast.error(error?.response?.data?.error || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -110,8 +111,9 @@ const Expenses = () => {
         const headers = Object.keys(csvData[0] || {});
         const csv = [
           headers.join(","),
-          ...csvData.map((row: any) =>
-            headers.map((header) => `"${row[header]}"`).join(",")
+          ...csvData.map((row: Record<string, unknown>) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            headers.map((header) => `"${(row as any)[header]}"`).join(",")
           ),
         ].join("\n");
 
@@ -123,7 +125,7 @@ const Expenses = () => {
         a.click();
         toast.dismiss(loadingToast);
         toast.success("Exported to CSV!");
-      } catch (e) {
+      } catch {
         toast.dismiss(loadingToast);
         toast.error("Failed to export");
       }
@@ -143,9 +145,6 @@ const Expenses = () => {
   // This replacement block ends at line 115.
   // I need to update the render method in a separate call or extend this one.
   // I will extend this replacement to include the variable mapping.
-  
-  const foodExpensesCount = 0; // Usage: {foodExpenses.length} - We don't have count from stats yet, maybe I should add it to stats?
-  const otherExpensesCount = 0;
   
   // paginatedExpenses is now just expenses
   const paginatedExpenses = expenses;

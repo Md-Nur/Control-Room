@@ -1,4 +1,4 @@
-import KhorochModel from "@/models/Khoroch";
+import KhorochModel, { Khoroch } from "@/models/Khoroch";
 import PolapainModel from "@/models/Polapain";
 import { NextRequest } from "next/server"; // Kept NextRequest
 import { cookies } from "next/headers";
@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import Notification from "@/models/Notification";
 import { sendPushNotification } from "@/lib/push";
 import dbConnect from "@/lib/dbConnect";
+import { FilterQuery } from "mongoose";
 
 export async function GET(req: NextRequest) {
   await dbConnect();
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
   const participant = url.searchParams.get("participant");
   const excludeType = url.searchParams.get("excludeType");
 
-  const query: any = {};
+  const query: FilterQuery<Khoroch> = {};
 
   // Search filter
   if (search) {
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Sorting
-  let sort: any = { date: -1, _id: -1 };
+  let sort: string | { [key: string]: string | number } = { date: -1, _id: -1 };
   if (sortParam === "date") {
     sort = { date: -1 };
   } else if (sortParam === "_id") {
@@ -112,7 +113,7 @@ export async function GET(req: NextRequest) {
       },
       stats,
     });
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to fetch expenses" }, { status: 500 });
   }
 }
@@ -150,15 +151,15 @@ export async function POST(req: Request) {
       let currentUserId = "";
       
       if (token) {
-          const decoded: any = jwt.verify(token, process.env.TOKEN_SECRET!);
-          currentUserId = decoded.id || decoded._id;
+          const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as { id?: string, _id?: string };
+          currentUserId = decoded.id || decoded._id || "";
       }
 
       // Collect unique recipients
       const recipients = new Set<string>();
       
-      khoroch.dise.forEach((p: any) => recipients.add(p.id));
-      khoroch.dibo.forEach((p: any) => recipients.add(p.id));
+      khoroch.dise.forEach((p: { id: string }) => recipients.add(p.id));
+      khoroch.dibo.forEach((p: { id: string }) => recipients.add(p.id));
       
       // Remove current user (sender)
       if (currentUserId) recipients.delete(currentUserId);

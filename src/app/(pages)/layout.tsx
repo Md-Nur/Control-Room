@@ -1,32 +1,36 @@
 "use client";
 import { usePolapainAuth } from "@/context/polapainAuth";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
-const PageLayout = ({ children }: { children: ReactNode }) => {
+const RootLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const { polapainAuth, loading } = usePolapainAuth();
   const pathname = usePathname();
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup"];
+  const publicRoutes = useMemo(() => ["/login", "/signup", "/verify"], []);
 
   // Redirect to login if not authenticated (must be in useEffect to avoid setState during render)
   useEffect(() => {
     if (!loading && !polapainAuth && !publicRoutes.includes(pathname)) {
       router.push("/login");
     }
-  }, [loading, polapainAuth, pathname, router]);
+  }, [pathname, polapainAuth, loading, router, publicRoutes]);
 
   if (loading) {
-    return <span className="loading loading-bars loading-lg"></span>;
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <span className="loading loading-bars loading-lg"></span>
+      </div>
+    );
   }
 
   if (!polapainAuth && !publicRoutes.includes(pathname)) {
     return null; // Return null while redirecting
   }
 
-  return children;
+  return <>{children}</>;
 };
 
-export default PageLayout;
+export default RootLayoutContent;

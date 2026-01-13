@@ -29,12 +29,15 @@ export async function sendPushNotification(userId: string, payload: { title: str
 
   const pushPromises = user.pushSubscriptions.map(async (subscription) => {
     try {
-      await webpush.sendNotification(subscription, JSON.stringify(payload));
-    } catch (error: any) {
-      if (error.statusCode === 410 || error.statusCode === 404) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await webpush.sendNotification(subscription as any, JSON.stringify(payload));
+    } catch (error) {
+      const err = error as { statusCode?: number };
+      if (err.statusCode === 410 || err.statusCode === 404) {
         // Subscription has expired or is no longer valid
         await PolapainModel.findByIdAndUpdate(userId, {
-          $pull: { pushSubscriptions: { endpoint: subscription.endpoint } }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          $pull: { pushSubscriptions: { endpoint: (subscription as any).endpoint } }
         });
       } else {
         console.error("Error sending push notification:", error);

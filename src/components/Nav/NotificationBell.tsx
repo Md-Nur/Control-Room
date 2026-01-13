@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { FaBell } from "react-icons/fa";
 import { usePolapainAuth } from "@/context/polapainAuth";
@@ -21,22 +21,22 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!polapainAuth?._id) return;
     try {
       const res = await axios.get(`/api/notifications?userId=${polapainAuth._id}`);
       setNotifications(res.data);
       setUnreadCount(res.data.filter((n: Notification) => !n.isRead).length);
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch notifications");
     }
-  };
+  }, [polapainAuth?._id]);
 
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000); // Poll every minute
     return () => clearInterval(interval);
-  }, [polapainAuth]);
+  }, [fetchNotifications]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -49,15 +49,15 @@ const NotificationBell = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleMarkRead = async (notificationId: string, link: string) => {
+  const handleMarkRead = async (notificationId: string) => {
     try {
       await axios.put("/api/notifications", { notificationId });
       // Update local state
       setNotifications(prev => prev.map(n => n._id === notificationId ? { ...n, isRead: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
       setIsOpen(false);
-    } catch (error) {
-       console.error(error);
+    } catch {
+       console.error("Failed to mark notification as read");
     }
   };
 
@@ -66,8 +66,8 @@ const NotificationBell = () => {
           await axios.put("/api/notifications", { markAllRead: true, userId: polapainAuth?._id });
           setNotifications(prev => prev.map(n => ({...n, isRead: true})));
           setUnreadCount(0);
-      } catch (error) {
-          console.error(error);
+      } catch {
+          console.error("Failed to mark all as read");
       }
   }
 
@@ -104,7 +104,7 @@ const NotificationBell = () => {
                    >
                         <Link 
                             href={notif.link || "#"} 
-                            onClick={() => handleMarkRead(notif._id, notif.link)}
+                            onClick={() => handleMarkRead(notif._id)}
                             className="block"
                         >
                             <p className="text-sm font-medium">{notif.message}</p>

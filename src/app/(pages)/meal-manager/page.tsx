@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import CreativeLoader from "@/components/CreativeLoader";
+import Image from "next/image";
 import toast from "react-hot-toast";
 import { calculateMonthlyMealCost } from "@/lib/mealCalculator";
 
@@ -15,6 +16,18 @@ interface MealRecord {
   dinner: boolean;
 }
 
+interface MealSummary {
+  user: {
+      _id: string;
+      name: string;
+      avatar?: string;
+  };
+  cost: number;
+  breakfast: number;
+  lunch: number;
+  dinner: number;
+}
+
 const MealManager = () => {
   const { polapainAuth } = usePolapainAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -22,61 +35,35 @@ const MealManager = () => {
   const [loading, setLoading] = useState(true);
   
   // Manager State
-  const [polapains, setPolapains] = useState<any[]>([]);
+  const [polapains, setPolapains] = useState<{_id: string, name: string, avatar?: string}[]>([]);
   const [selecteduserId, setSelectedUserId] = useState<string>(""); 
   const [viewMode, setViewMode] = useState<"calendar" | "summary">("calendar");
-  const [summaryData, setSummaryData] = useState<any[]>([]);
+  const [summaryData, setSummaryData] = useState<MealSummary[]>([]);
 
-  useEffect(() => {
-    if (viewMode === "calendar" && !loading) {
-       setTimeout(() => {
-         const todayCard = document.getElementById("today-card");
-         if (todayCard) {
-            todayCard.scrollIntoView({ behavior: "smooth", block: "center" });
-         }
-       }, 500); // Small delay to ensure render
-    }
-  }, [loading, viewMode, currentMonth]);
-
-  useEffect(() => {
-    if (polapainAuth?._id) {
-       setSelectedUserId(polapainAuth._id);
-       fetchPolapains();
-    }
-  }, [polapainAuth]);
-
-  useEffect(() => {
-    if (viewMode === "calendar" && selecteduserId) {
-       fetchUserMeals();
-    } else if (viewMode === "summary") {
-       fetchSummary();
-    }
-  }, [selecteduserId, currentMonth, viewMode]);
-
-  const fetchPolapains = async () => {
+  const fetchPolapains = useCallback(async () => {
      try {
         const res = await axios.get("/api/polapain");
         setPolapains(res.data);
-     } catch (e) {
-        console.error(e);
+     } catch {
+        console.error("Failed to fetch polapains");
      }
-  };
+  }, []);
 
-  const fetchUserMeals = async () => {
+  const fetchUserMeals = useCallback(async () => {
     setLoading(true);
     try {
       const res = await axios.get(
         `/api/meals?userId=${selecteduserId}&month=${format(currentMonth, "yyyy-MM")}`
       );
       setMeals(res.data);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load meals");
     } finally {
       setLoading(false);
     }
-  };
+  }, [selecteduserId, currentMonth]);
 
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
     setLoading(true);
     try {
         const res = await axios.get(`/api/meals?month=${format(currentMonth, "yyyy-MM")}`);
@@ -84,12 +71,12 @@ const MealManager = () => {
         
         // Group by User
         const stats = polapains.map(user => {
-            const userMeals = allMeals.filter((m: any) => m.userId === user._id);
+            const userMeals = allMeals.filter((m: MealRecord & {userId: string}) => m.userId === user._id);
             const cost = calculateMonthlyMealCost(userMeals);
             
             // Calculate counts
             let b = 0, l = 0, d = 0;
-            userMeals.forEach((m: any) => {
+            userMeals.forEach((m: MealRecord) => {
                  // Check if it's a default day (counts as B+D) or specific
                  const isDefault = !m.breakfast && !m.lunch && !m.dinner;
                  if (isDefault) {
@@ -111,12 +98,38 @@ const MealManager = () => {
         });
         
         setSummaryData(stats);
-    } catch (error) {
+    } catch {
         toast.error("Failed to fetch summary");
     } finally {
         setLoading(false);
     }
-  };
+  }, [currentMonth, polapains]);
+
+  useEffect(() => {
+    if (viewMode === "calendar" && !loading) {
+       setTimeout(() => {
+         const todayCard = document.getElementById("today-card");
+         if (todayCard) {
+            todayCard.scrollIntoView({ behavior: "smooth", block: "center" });
+         }
+       }, 500); // Small delay to ensure render
+    }
+  }, [loading, viewMode, currentMonth]);
+
+  useEffect(() => {
+    if (polapainAuth?._id) {
+       setSelectedUserId(polapainAuth._id);
+       fetchPolapains();
+    }
+  }, [polapainAuth, fetchPolapains]);
+
+  useEffect(() => {
+    if (viewMode === "calendar" && selecteduserId) {
+       fetchUserMeals();
+    } else if (viewMode === "summary") {
+       fetchSummary();
+    }
+  }, [selecteduserId, currentMonth, viewMode, fetchUserMeals, fetchSummary]);
 
   const handleToggle = async (date: Date, type: "breakfast" | "lunch" | "dinner") => {
     const previousMeals = [...meals];
@@ -144,7 +157,7 @@ const MealManager = () => {
                     date: date.toISOString()
                 }
             });
-        } catch (error) {
+        } catch {
             toast.error("Failed to delete");
             setMeals(previousMeals);
         }
@@ -163,8 +176,8 @@ const MealManager = () => {
                 ...newRecord,
                 date: date.toISOString()
             });
-        } catch (error) {
-            toast.error("Failed to save");
+        } catch {
+            toast.error("Failed to update");
             setMeals(previousMeals);
         }
     }
@@ -252,7 +265,7 @@ const MealManager = () => {
                                     <div className="flex items-center gap-3">
                                         <div className="avatar">
                                             <div className="w-10 rounded-full">
-                                                <img src={stat.user.avatar || "/avatar.jpg"} />
+                                                <Image src={stat.user.avatar || "/avatar.jpg"} alt={stat.user.name} width={40} height={40} />
                                             </div>
                                         </div>
                                         <div className="font-bold">{stat.user.name}</div>

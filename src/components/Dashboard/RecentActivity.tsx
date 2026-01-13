@@ -15,7 +15,6 @@ const RecentActivity = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 5;
 
   useEffect(() => {
     setMounted(true);
@@ -32,20 +31,22 @@ const RecentActivity = () => {
     const fetchRecentExpenses = async () => {
       setLoading(true);
       try {
-        const queryParams = new URLSearchParams({
-          sort: "_id",
-          limit: itemsPerPage.toString(),
-          page: currentPage.toString(),
-          participant: polapainAuth._id,
-          excludeType: "add-taka",
+        const params: Record<string, string> = {
+          sort: "date",
+          limit: "5",
+          page: "1",
+          excludeType: "Point Transfer",
           skipStats: "true"
-        });
+        };
+        if (polapainAuth?._id) params.participant = polapainAuth._id;
         
-        const res = await axios.get<any>(`/api/all-expenses?${queryParams}`);
+        const queryParams = new URLSearchParams(params);
         
-        const expenses = (res.data as any).expenses || [];
+        const res = await axios.get<{expenses: Khoroch[], meta: {totalPages: number}}>(`/api/all-expenses?${queryParams}`);
+        
+        const expenses = res.data.expenses || [];
         setRecentExpenses(expenses);
-        setTotalPages((res.data as any).meta?.totalPages || 1);
+        setTotalPages(res.data.meta?.totalPages || 1);
       } catch (error) {
         console.error("Error fetching recent expenses:", error);
       } finally {

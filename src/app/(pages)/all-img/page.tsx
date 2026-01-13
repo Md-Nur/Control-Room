@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import toast from "react-hot-toast";
+// @ts-expect-error - no types for react-responsive-masonry
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import CreativeLoader from "@/components/CreativeLoader";
 
@@ -24,7 +25,8 @@ const GalleryPage = () => {
       try {
         const res = await axios.get("/api/img");
         setPhotos(res.data);
-      } catch (error: any) {
+      } catch (_error: unknown) {
+        const error = _error as { response?: { data?: { error?: string } } };
         toast.error(error?.response?.data?.error || "Failed to load photos");
       } finally {
         setLoading(false);
@@ -66,12 +68,12 @@ const GalleryPage = () => {
                             className="relative group cursor-zoom-in overflow-hidden rounded-xl shadow-md border border-base-200 bg-base-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                             onClick={() => openLightbox(photo)}
                         >
-                            <div className="relative w-full" style={{ height: "auto" }}>
-                                <img
+                            <div className="relative w-full aspect-square" style={{ height: "auto" }}>
+                                <Image
                                     src={photo.img}
-                                    alt={photo.title}
-                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                                    loading="lazy"
+                                    alt={photo.title || "Gallery image"}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                                 {/* Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -110,14 +112,17 @@ const GalleryPage = () => {
             </button>
             
             <div 
-                className="relative max-w-5xl max-h-[90vh] flex flex-col items-center"
+                className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center"
                 onClick={(e) => e.stopPropagation()} // Prevent close on image click
             >
-                <img 
-                    src={selectedPhoto.img} 
-                    alt={selectedPhoto.title} 
-                    className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
-                />
+                <div className="relative w-full h-[80vh]">
+                    <Image 
+                        src={selectedPhoto.img} 
+                        alt={selectedPhoto.title || "Selected image"} 
+                        fill
+                        className="object-contain rounded-lg shadow-2xl"
+                    />
+                </div>
                 <div className="mt-4 text-center text-white">
                     <h2 className="text-2xl font-bold">{selectedPhoto.title}</h2>
                     <p className="opacity-70 mt-1">{selectedPhoto.date}</p>

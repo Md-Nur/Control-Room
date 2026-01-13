@@ -1,4 +1,4 @@
-import PolapainModel, { Polapain } from "@/models/Polapain";
+import PolapainModel from "@/models/Polapain";
 import dbConnect from "@/lib/dbConnect";
 
 export async function GET() {

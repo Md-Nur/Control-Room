@@ -1,7 +1,7 @@
 import { Document, Model, model, models, Schema } from "mongoose";
 
 export interface BasePolapain {
-  _id?: any;
+  _id?: string;
   name: string;
   dob?: Date;
   phone?: string;
@@ -9,10 +9,14 @@ export interface BasePolapain {
   avatar?: string;
   balance: number;
   isManager: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pushSubscriptions?: any[];
 }
 
-export interface Polapain extends BasePolapain, Document {}
+export interface Polapain extends Document, Omit<BasePolapain, "_id"> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _id: any; 
+}
 
 const polapainSchema = new Schema<Polapain>({
   name: { type: String, required: true },
