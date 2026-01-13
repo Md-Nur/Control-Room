@@ -1,22 +1,20 @@
 import mongoose from "mongoose";
 
-type ConnectionObjcect = {
-  isConnected?: number;
-};
-
 async function dbConnect(): Promise<void> {
-  const connection: ConnectionObjcect = {};
-
-  if (connection.isConnected) {
+  if (mongoose.connection.readyState === 1) {
     return;
   }
-
+  
   try {
-    const db = await mongoose.connect(process.env.MONGODB_URI || "", {
+    const connectionOptions = {
       dbName: "control_room",
-    });
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
 
-    connection.isConnected = db.connections[0].readyState;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await mongoose.connect(process.env.MONGODB_URI || "", connectionOptions as any);
+
   } catch (error) {
     console.error("Database connection failed", error);
     process.exit(1);
