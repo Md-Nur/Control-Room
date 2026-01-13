@@ -7,7 +7,6 @@ export async function GET() {
   await dbConnect();
   const cookieStore = await cookies();
   const token: string | undefined = cookieStore.get("token")?.value;
-  // console.log(token);
   if (!token) {
     return Response.json({ error: "Did not found token" }, { status: 401 });
   }
@@ -19,12 +18,10 @@ export async function GET() {
       { status: 401 }
     );
   }
-  // console.log(userId);
   const newUser = await PolapainModel.findById(userId._id);
   if (!newUser) {
     return Response.json({ error: "Unauthorized Pola nai" }, { status: 401 });
   }
-  // console.log(newUser);
   return Response.json({
     _id: newUser._id,
     name: newUser.name,

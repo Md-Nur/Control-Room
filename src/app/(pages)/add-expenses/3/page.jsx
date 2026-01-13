@@ -19,7 +19,6 @@ const AddExpenses3 = () => {
       amount += Number(d.amount);
     });
     if (Math.abs(khroch.amount - amount) > 1) {
-      console.log(khroch.amount, amount);
       toast.error("Amount is not equal to total amount");
       return;
     }
@@ -27,7 +26,6 @@ const AddExpenses3 = () => {
       ...khroch,
       ...data,
     });
-    // console.log(data);
     router.push("/add-expenses/4");
   };
 

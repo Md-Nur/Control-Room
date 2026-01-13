@@ -38,11 +38,9 @@ const SignUp = () => {
       } else {
         toast.success("Welcome chutiya");
         setPolapainAuth(polapain.data);
-        console.log(polapain.data);
       }
       /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
-      // console.log(error);
       toast.dismiss();
       toast.error(
         error?.response?.data?.error || error.message || "Something went wrong"
@@ -51,7 +49,6 @@ const SignUp = () => {
   };
 
   const onFileChange = () => {
-    // console.log(avatarFile.current);
     const file: File | null =
       (avatarFile.current as unknown as HTMLInputElement)?.files?.[0] || null;
     if (!file) return;

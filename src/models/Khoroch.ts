@@ -16,9 +16,21 @@ const khorochSchema = new Schema<Khoroch>({
   date: { type: Date, required: true },
   dise: [{ id: String, amount: Number, name: String, avatar: String }],
   dibo: [{ id: String, amount: Number, name: String, avatar: String }],
-  type: { type: String, required: true, enum: ["food", "others", "add-taka"] },
+  type: { 
+    type: String, 
+    required: true, 
+    enum: [
+      "food", "grocery", "transportation", "house_rent", "utilities", 
+      "entertainment", "healthcare", "shopping", "personal_care", "others", "add-taka"
+    ] 
+  },
   isApproved: { type: Boolean, default: false },
 });
+
+// Force delete the model from cache in development to ensure schema changes are picked up
+if (process.env.NODE_ENV === "development") {
+  delete models.Khoroch;
+}
 
 const KhorochModel =
   (models.Khoroch as Model<Khoroch>) ||

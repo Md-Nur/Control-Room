@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Nav/Navbar";
+import BottomNav from "@/components/Nav/BottomNav";
 import { Toaster } from "react-hot-toast";
 import Footer from "@/components/Footer";
 import PolapainAuthProvider from "@/provider/PolapainProvider";
@@ -28,9 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <PolapainAuthProvider>
           <Navbar>
@@ -39,6 +41,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </Navbar>
+          <BottomNav />
           <Toaster position="top-right" reverseOrder={false} />
         </PolapainAuthProvider>
       </body>

@@ -2,7 +2,7 @@
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaImage } from "react-icons/fa";
@@ -11,6 +11,7 @@ const AddImg = () => {
   const imgFile = useRef(null);
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState("");
+  const [defaultDate, setDefaultDate] = useState("");
   const router = useRouter();
   const { register, handleSubmit } = useForm<PhotoData>();
 
@@ -20,15 +21,19 @@ const AddImg = () => {
     img: string;
     isPrivate?: boolean;
   }
+
+  // Set default date on client side to avoid hydration mismatch
+  useEffect(() => {
+    setDefaultDate(new Date().toISOString().split("T")[0]);
+  }, []);
+
   const onFileChange = () => {
-    // console.log(avatarFile.current);
     const file: File | null =
       (imgFile.current as unknown as HTMLInputElement)?.files?.[0] || null;
     if (!file) return;
     setPreview(URL.createObjectURL(file));
   };
   const onSubmit: SubmitHandler<PhotoData> = async (data) => {
-    // console.log(data);
     setProgress(10);
     const file: File | null =
       (imgFile.current as unknown as HTMLInputElement)?.files?.[0] || null;
@@ -56,7 +61,6 @@ const AddImg = () => {
       router.push("/");
       /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
-      // console.log(error);
       toast.dismiss();
       toast.error(
         error?.response?.data?.error || error.message || "Something went wrong"
@@ -85,7 +89,7 @@ const AddImg = () => {
           <input
             className="input input-bordered w-40"
             type="date"
-            defaultValue={new Date().toISOString().split("T")[0]}
+            defaultValue={defaultDate}
             {...register("date")}
             required
           />

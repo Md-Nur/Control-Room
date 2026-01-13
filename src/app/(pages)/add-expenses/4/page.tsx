@@ -10,7 +10,6 @@ const AddExpenses4 = () => {
   const { khroch, polapains } = useKhoroch();
   const router = useRouter();
   const { setPolapainAuth } = usePolapainAuth();
-  // console.log(khroch);
   const handleSubmit = () => {
     toast.loading("Submitting...");
     axios

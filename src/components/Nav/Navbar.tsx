@@ -3,6 +3,7 @@ import { MdMenu } from "react-icons/md";
 import NavLinks from "./NavLinks";
 import Logo from "../../../public/logo.jpg";
 import Image from "next/image";
+import NotificationBell from "./NotificationBell";
 
 const Navbar = ({ children }: { children: ReactNode }) => {
   return (
@@ -23,6 +24,12 @@ const Navbar = ({ children }: { children: ReactNode }) => {
           <div className="mx-2 flex-1 px-2">
             <Image src={Logo} alt="Logo" className="w-12 h-12 rounded" />
           </div>
+          
+          {/* Notification Bell (Visible on both mobile and desktop) */}
+          <div className="flex-none">
+             <NotificationBell />
+          </div>
+
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
               {/* Navbar menu content here */}

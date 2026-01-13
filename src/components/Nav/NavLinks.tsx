@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 const NavLinks = () => {
   const authContext = usePolapainAuth();
   if (typeof authContext === "string") {
-    return null; // or handle the error appropriately
+    return null;
   }
   const { polapainAuth, setPolapainAuth, setLoading, loading } = authContext;
 
@@ -28,15 +28,17 @@ const NavLinks = () => {
 
   return (
     <>
-      <NavRoute name="home" route="/" />
+      <NavRoute name="home" route="/dashboard" />
       {!loading && polapainAuth ? (
         <>
-          <NavRoute name="dashboard" />
-          <NavRoute name="all expenses" route="/all-expenses" />
-          <NavRoute name="add expenses" route="/add-expenses/1" />
-          <NavRoute name="all balance" route="/all-balance" />
-          <NavRoute name="photos" route="/add-img" />
-          {polapainAuth?.isManager && <NavRoute name="manager" />}
+          <NavRoute name="balances" route="/all-balance" />
+          <NavRoute name="expenses" route="/all-expenses" />
+          <NavRoute name="add expense" route="/add-expenses" />
+          <NavRoute name="gallery" route="/all-img" />
+          <NavRoute name="meals" route="/meal-manager" />
+          <NavRoute name="add image" route="/add-img" />
+          <NavRoute name="profile" route="/profile" />
+          {polapainAuth?.isManager && <NavRoute name="manager" route="/manager" />}
           <li className="list-none">
             <button onClick={handleLogout}>LOGOUT</button>
           </li>
@@ -44,7 +46,6 @@ const NavLinks = () => {
       ) : (
         <>
           <NavRoute name="login" />
-          {/* <NavRoute name="signup" /> */}
         </>
       )}
     </>

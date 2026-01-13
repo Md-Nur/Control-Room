@@ -1,0 +1,132 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Image from "next/image";
+import toast from "react-hot-toast";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import CreativeLoader from "@/components/CreativeLoader";
+
+interface Photo {
+  _id: string;
+  title: string;
+  date: string;
+  img: string;
+  isPrivate?: boolean;
+}
+
+const GalleryPage = () => {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const res = await axios.get("/api/img");
+        setPhotos(res.data);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.error || "Failed to load photos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhotos();
+  }, []);
+
+  const openLightbox = (photo: Photo) => {
+    setSelectedPhoto(photo);
+    document.body.style.overflow = "hidden"; // Prevent scrolling
+  };
+
+  const closeLightbox = () => {
+    setSelectedPhoto(null);
+    document.body.style.overflow = "auto"; // Restore scrolling
+  };
+
+  return (
+    <section className="w-full px-4 py-8 pb-24 md:pb-8 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+            📸 Gallery
+          </h1>
+        </div>
+
+        {loading ? (
+             <CreativeLoader />
+        ) : photos.length > 0 ? (
+          <ResponsiveMasonry
+                columnsCountBreakPoints={{350: 1, 750: 2, 900: 3}}
+            >
+                <Masonry gutter="1.5rem">
+                    {photos.map((photo) => (
+                        <div 
+                            key={photo._id} 
+                            className="relative group cursor-zoom-in overflow-hidden rounded-xl shadow-md border border-base-200 bg-base-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                            onClick={() => openLightbox(photo)}
+                        >
+                            <div className="relative w-full" style={{ height: "auto" }}>
+                                <img
+                                    src={photo.img}
+                                    alt={photo.title}
+                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                                {/* Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                    <h3 className="text-white font-bold text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">{photo.title}</h3>
+                                    <p className="text-white/80 text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-100">{photo.date}</p>
+                                </div>
+                                {photo.isPrivate && (
+                                    <div className="absolute top-2 right-2 badge badge-error gap-2 shadow-lg">
+                                        🔒 Private
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </Masonry>
+            </ResponsiveMasonry>
+        ) : (
+          <div className="text-center py-20 bg-base-200 rounded-xl">
+            <h3 className="text-2xl font-bold opacity-50">No photos found</h3>
+            <p className="opacity-40 mt-2">Upload some photos to get started!</p>
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox Modal */}
+      {selectedPhoto && (
+        <div 
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={closeLightbox}
+        >
+            <button 
+                className="absolute top-4 right-4 btn btn-circle btn-ghost text-white text-xl hover:bg-white/20"
+                onClick={closeLightbox}
+            >
+                ✕
+            </button>
+            
+            <div 
+                className="relative max-w-5xl max-h-[90vh] flex flex-col items-center"
+                onClick={(e) => e.stopPropagation()} // Prevent close on image click
+            >
+                <img 
+                    src={selectedPhoto.img} 
+                    alt={selectedPhoto.title} 
+                    className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                />
+                <div className="mt-4 text-center text-white">
+                    <h2 className="text-2xl font-bold">{selectedPhoto.title}</h2>
+                    <p className="opacity-70 mt-1">{selectedPhoto.date}</p>
+                </div>
+            </div>
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default GalleryPage;

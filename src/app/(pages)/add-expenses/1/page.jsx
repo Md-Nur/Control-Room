@@ -5,11 +5,18 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
 
 const AddExpenses = () => {
   const router = useRouter();
   const { polapains, setPolapains, setKhoroch } = useKhoroch();
   const { handleSubmit, register } = useForm();
+  const [defaultDate, setDefaultDate] = useState("");
+
+  // Set default date on client side to avoid hydration mismatch
+  useEffect(() => {
+    setDefaultDate(new Date().toISOString().split("T")[0]);
+  }, []);
 
   const onSubmit = async (data) => {
     if (!data.amount) {
@@ -55,7 +62,7 @@ const AddExpenses = () => {
           <input
             className="input input-bordered w-40"
             type="date"
-            defaultValue={new Date().toISOString().split("T")[0]}
+            defaultValue={defaultDate}
             {...register("date")}
           />
         </div>

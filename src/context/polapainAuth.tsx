@@ -1,14 +1,13 @@
-"use client";
-import { Polapain } from "@/models/Polapain";
+import { BasePolapain } from "@/models/Polapain";
 import { createContext, useContext } from "react";
 
 const PolapainAuth = createContext<{
-  polapainAuth: Polapain | undefined;
-  setPolapainAuth: (polapainAuth: Polapain | undefined) => void;
+  polapainAuth: BasePolapain | undefined;
+  setPolapainAuth: (polapainAuth: BasePolapain | undefined) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }>({
-  polapainAuth: {} as Polapain,
+  polapainAuth: {} as BasePolapain,
   setPolapainAuth: () => {},
   loading: true,
   setLoading: () => {},

@@ -1,8 +1,12 @@
 import PolapainModel, { Polapain } from "@/models/Polapain";
+import dbConnect from "@/lib/dbConnect";
 
 export async function GET() {
-  const all_polapain: Polapain[] = await PolapainModel.find().sort({
+  await dbConnect();
+  
+  const all_polapain = await PolapainModel.find().sort({
     balance: -1,
-  });
+  }).lean();
+  
   return Response.json(all_polapain);
 }

@@ -1,6 +1,7 @@
 import { Document, Model, model, models, Schema } from "mongoose";
 
-export interface Polapain extends Document {
+export interface BasePolapain {
+  _id?: any;
   name: string;
   dob?: Date;
   phone?: string;
@@ -8,7 +9,10 @@ export interface Polapain extends Document {
   avatar?: string;
   balance: number;
   isManager: boolean;
+  pushSubscriptions?: any[];
 }
+
+export interface Polapain extends BasePolapain, Document {}
 
 const polapainSchema = new Schema<Polapain>({
   name: { type: String, required: true },
@@ -18,6 +22,7 @@ const polapainSchema = new Schema<Polapain>({
   avatar: { type: String, required: false },
   balance: { type: Number, default: 0 },
   isManager: { type: Boolean, default: false },
+  pushSubscriptions: { type: [Schema.Types.Mixed], default: [] },
 });
 
 const PolapainModel =

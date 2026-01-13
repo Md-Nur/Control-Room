@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 const NavRoute = ({ name, route }: { name: string; route?: string }) => {
   const pathname = usePathname();
   const to = route || `/${name}`;
-  // console.log(pathname, to);
   const closeNav = () => {
     const inputNav = document.getElementById("my-drawer-3");
     // remove input checkbox

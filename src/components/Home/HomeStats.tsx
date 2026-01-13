@@ -14,7 +14,6 @@ const HomeStats = () => {
       .get("/api/img")
       .then((res) => {
         setImages(res.data);
-        console.log(res.data[0].img);
       })
       .catch((error) => {
         toast.error(error?.response?.data?.error || "Something went wrong");
