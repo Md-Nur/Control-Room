@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import Notification from "@/models/Notification";
 import { sendPushNotification } from "@/lib/push";
 import dbConnect from "@/lib/dbConnect";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, SortOrder } from "mongoose";
 
 export async function GET(req: NextRequest) {
   await dbConnect();
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Sorting
-  let sort: string | { [key: string]: string | number } = { date: -1, _id: -1 };
+  let sort: { [key: string]: SortOrder } = { date: -1, _id: -1 };
   if (sortParam === "date") {
     sort = { date: -1 };
   } else if (sortParam === "_id") {

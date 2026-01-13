@@ -65,10 +65,10 @@ const GalleryPage = () => {
                     {photos.map((photo) => (
                         <div 
                             key={photo._id} 
-                            className="relative group cursor-zoom-in overflow-hidden rounded-xl shadow-md border border-base-200 bg-base-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                            className="w-full relative group cursor-zoom-in overflow-hidden rounded-xl shadow-md border border-base-200 bg-base-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                             onClick={() => openLightbox(photo)}
                         >
-                            <div className="relative w-full aspect-square" style={{ height: "auto" }}>
+                            <div className="relative w-full aspect-square">
                                 <Image
                                     src={photo.img}
                                     alt={photo.title || "Gallery image"}

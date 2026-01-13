@@ -95,7 +95,7 @@ const RecentActivity = () => {
                 <div className="space-y-3">
                   {recentExpenses.map((expense) => (
                     <div
-                      key={expense._id || Math.random()}
+                      key={String(expense._id) || Math.random()}
                       className="flex items-center gap-3 p-3 bg-base-100 rounded-lg hover:shadow-md transition-shadow"
                     >
                       <div className="text-3xl">

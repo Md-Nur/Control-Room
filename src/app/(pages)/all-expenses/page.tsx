@@ -330,7 +330,7 @@ const Expenses = () => {
                   </thead>
                   <tbody>
                     {paginatedExpenses.map((expense) => (
-                      <tr key={expense._id} className="hover:bg-base-200/50 transition-colors group">
+                      <tr key={expense._id.toString()} className="hover:bg-base-200/50 transition-colors group">
                         <td className="pl-6">
                           <div className="w-12 h-12 rounded-xl bg-base-200 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
                             {getCategoryIcon(expense.type)}
@@ -408,7 +408,7 @@ const Expenses = () => {
               {/* Mobile Card View */}
               <div className="md:hidden grid gap-4">
                 {paginatedExpenses.map((expense) => (
-                  <div key={expense._id} className="card bg-base-100 shadow-md border border-base-content/5">
+                  <div key={expense._id.toString()} className="card bg-base-100 shadow-md border border-base-content/5">
                     <div className="card-body p-4">
                       <div className="flex justify-between items-start">
                         <div className="flex gap-3">
