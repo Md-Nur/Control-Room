@@ -218,17 +218,17 @@ const Balance = () => {
               <p className="text-sm text-base-content/70 mb-4">
                 Optimal payment flow to settle all debts:
               </p>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 gap-2">
                 {getSettlementSuggestions().map((suggestion, i) => (
                   <div
                     key={i}
-                    className="alert alert-info flex justify-between items-center"
+                    className="alert alert-info flex flex-col sm:flex-row justify-between items-center gap-2 p-3 sm:p-4 text-center sm:text-left"
                   >
-                    <span>
+                    <span className="text-sm sm:text-base">
                       <strong>{suggestion.from}</strong> should pay{" "}
                       <strong>{suggestion.to}</strong>
                     </span>
-                    <span className="badge badge-lg">
+                    <span className="badge badge-lg whitespace-nowrap">
                       {suggestion.amount.toFixed(2)} ৳
                     </span>
                   </div>

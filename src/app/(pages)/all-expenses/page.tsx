@@ -250,10 +250,10 @@ const Expenses = () => {
               </div>
 
               {/* Sort & Date */}
-              <div className="flex flex-wrap gap-2 justify-end">
+              <div className="flex flex-wrap gap-2 justify-center lg:justify-end items-center">
                 <select
                   onChange={(e) => setSort(e.target.value)}
-                  className="select select-bordered select-sm bg-base-200/50"
+                  className="select select-bordered select-sm bg-base-200/50 flex-1 md:flex-none"
                   value={sort}
                 >
                   <option value="">Sort by...</option>
@@ -261,41 +261,43 @@ const Expenses = () => {
                   <option value="_id">Added</option>
                 </select>
 
-                <div className="join">
+                <div className="join flex-1 md:flex-none justify-center">
                    <input
                     type="date"
-                    className="input input-bordered input-sm join-item w-32 bg-base-200/50"
+                    className="input input-bordered input-sm join-item w-full md:w-32 bg-base-200/50"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
                   />
                   <input
                     type="date"
-                    className="input input-bordered input-sm join-item w-32 bg-base-200/50"
+                    className="input input-bordered input-sm join-item w-full md:w-32 bg-base-200/50"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
                   />
                 </div>
                 
-                {(dateFrom || dateTo) && (
-                  <button
-                    className="btn btn-sm btn-ghost btn-circle text-error"
-                    onClick={() => {
-                      setDateFrom("");
-                      setDateTo("");
-                    }}
-                  >
-                    ✕
-                  </button>
-                )}
+                <div className="flex gap-2">
+                  {(dateFrom || dateTo) && (
+                    <button
+                      className="btn btn-sm btn-ghost btn-circle text-error"
+                      onClick={() => {
+                        setDateFrom("");
+                        setDateTo("");
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
 
-                 <button
-                  className="btn btn-sm btn-circle btn-success text-white shadow-lg"
-                  onClick={exportToCSV}
-                  disabled={filteredExpenses.length === 0}
-                  title="Export CSV"
-                >
-                  📥
-                </button>
+                   <button
+                    className="btn btn-sm btn-circle btn-success text-white shadow-lg"
+                    onClick={exportToCSV}
+                    disabled={filteredExpenses.length === 0}
+                    title="Export CSV"
+                  >
+                    📥
+                  </button>
+                </div>
               </div>
             </div>
           </div>

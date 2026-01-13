@@ -63,44 +63,62 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const total = await KhorochModel.countDocuments(query);
-    const expenses = await KhorochModel.find(query)
-      .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const pipeline: any[] = [
+      { $match: query },
+    ];
 
-    // Calculate stats based on current filter (unless skipped)
+    // Sorting stage
+    pipeline.push({ $sort: sort as any });
+
+    const skipStats = url.searchParams.get("skipStats") === "true";
+
+    const facetStage: any = {
+      expenses: [
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+      ],
+      totalCount: [
+        { $count: "count" },
+      ],
+    };
+
+    if (!skipStats) {
+      facetStage.stats = [
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" },
+            foodAmount: {
+              $sum: {
+                $cond: [{ $eq: ["$type", "food"] }, "$amount", 0],
+              },
+            },
+            othersAmount: {
+              $sum: {
+                $cond: [{ $eq: ["$type", "others"] }, "$amount", 0],
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    pipeline.push({ $facet: facetStage });
+
+    const result = await KhorochModel.aggregate(pipeline);
+    const data = result[0];
+
+    const expenses = data.expenses || [];
+    const total = data.totalCount[0]?.count || 0;
+    
     let stats = {
       totalAmount: 0,
       foodAmount: 0,
       othersAmount: 0,
     };
 
-    const skipStats = url.searchParams.get("skipStats") === "true";
-
-    if (!skipStats && total > 0) {
-        const statsPipeline = [
-          { $match: query },
-          {
-            $group: {
-              _id: null,
-              totalAmount: { $sum: "$amount" },
-              foodAmount: {
-                $sum: {
-                  $cond: [{ $eq: ["$type", "food"] }, "$amount", 0],
-                },
-              },
-              othersAmount: {
-                $sum: {
-                  $cond: [{ $eq: ["$type", "others"] }, "$amount", 0],
-                },
-              },
-            },
-          },
-        ];
-    
-        const statsResult = await KhorochModel.aggregate(statsPipeline);
-        stats = statsResult[0] || stats;
+    if (!skipStats && data.stats && data.stats.length > 0) {
+      stats = data.stats[0];
     }
 
     return Response.json({
@@ -113,7 +131,8 @@ export async function GET(req: NextRequest) {
       },
       stats,
     });
-  } catch {
+  } catch (error) {
+    console.error("Fetch expenses error:", error);
     return Response.json({ error: "Failed to fetch expenses" }, { status: 500 });
   }
 }
