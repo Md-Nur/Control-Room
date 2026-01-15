@@ -91,31 +91,46 @@ const QuickStats = () => {
             <div className="card bg-base-200 shadow-lg">
               <div className="card-body">
                 <h3 className="card-title mb-3">Quick Actions</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link
                     href="/add-expenses"
-                    className="btn btn-primary btn-sm md:btn-md"
+                    className="flex flex-col items-center justify-center p-4 rounded-2xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 transition-all duration-300 hover:scale-105 active:scale-95 group shadow-sm"
                   >
-                    💸 Add Expense
+                    <div className="w-12 h-12 rounded-xl bg-primary text-primary-content flex items-center justify-center mb-2 shadow-lg group-hover:rotate-6 transition-transform">
+                        <span className="text-2xl">💸</span>
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider">Add Expense</span>
                   </Link>
+
                   <Link
                     href="/all-expenses"
-                    className="btn btn-outline btn-sm md:btn-md"
+                    className="flex flex-col items-center justify-center p-4 rounded-2xl bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/10 transition-all duration-300 hover:scale-105 active:scale-95 group shadow-sm"
                   >
-                    📊 View Expenses
+                    <div className="w-12 h-12 rounded-xl bg-secondary text-secondary-content flex items-center justify-center mb-2 shadow-lg group-hover:-rotate-6 transition-transform">
+                        <span className="text-2xl">📊</span>
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider">Expenses</span>
                   </Link>
+
                   <Link
                     href="/all-balance"
-                    className="btn btn-outline btn-sm md:btn-md"
+                    className="flex flex-col items-center justify-center p-4 rounded-2xl bg-accent/10 hover:bg-accent/20 text-accent border border-accent/10 transition-all duration-300 hover:scale-105 active:scale-95 group shadow-sm"
                   >
-                    💰 Check Balances
+                    <div className="w-12 h-12 rounded-xl bg-accent text-accent-content flex items-center justify-center mb-2 shadow-lg group-hover:rotate-6 transition-transform">
+                        <span className="text-2xl">💰</span>
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider">Balances</span>
                   </Link>
+
                   {polapainAuth.isManager && (
                     <Link
                       href="/manager"
-                      className="btn btn-outline btn-sm md:btn-md"
+                      className="flex flex-col items-center justify-center p-4 rounded-2xl bg-info/10 hover:bg-info/20 text-info border border-info/10 transition-all duration-300 hover:scale-105 active:scale-95 group shadow-sm"
                     >
-                      👑 Manager Panel
+                        <div className="w-12 h-12 rounded-xl bg-info text-info-content flex items-center justify-center mb-2 shadow-lg group-hover:-rotate-6 transition-transform">
+                            <span className="text-2xl">👑</span>
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-center">Manager Panel</span>
                     </Link>
                   )}
                 </div>

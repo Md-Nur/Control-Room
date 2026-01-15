@@ -3,7 +3,7 @@ import { usePolapainAuth } from "@/context/polapainAuth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  MdHome,
+  MdDashboard,
   MdAccountBalanceWallet,
   MdReceipt,
   MdPerson,
@@ -18,15 +18,11 @@ const BottomNav = () => {
   if (!polapainAuth) return null;
 
   const navItems = [
-    { href: "/dashboard", icon: MdHome, label: "Home" },
+    { href: "/dashboard", icon: MdDashboard, label: "Dashboard" },
     { href: "/all-balance", icon: MdAccountBalanceWallet, label: "Balance" },
     { href: "/add-expenses", icon: MdAdd, label: "Add", primary: true },
     { href: "/all-expenses", icon: MdReceipt, label: "Expenses" },
-    {
-      href: polapainAuth?.isManager ? "/manager" : "/profile",
-      icon: MdPerson,
-      label: polapainAuth?.isManager ? "Manager" : "Profile",
-    },
+    { href: "/profile", icon: MdPerson, label: "Profile" },
   ];
 
   return (
