@@ -23,7 +23,7 @@ const BottomNav = () => {
     { href: "/add-expenses", icon: MdAdd, label: "Add", primary: true },
     { href: "/all-expenses", icon: MdReceipt, label: "Expenses" },
     {
-      href: polapainAuth?.isManager ? "/manager" : "/dashboard",
+      href: polapainAuth?.isManager ? "/manager" : "/profile",
       icon: MdPerson,
       label: polapainAuth?.isManager ? "Manager" : "Profile",
     },

@@ -239,35 +239,33 @@ const Balance = () => {
         )}
 
         {/* Manager Total */}
-        <div className="card bg-gradient-to-r from-primary to-secondary text-primary-content shadow-xl mt-8">
-          <div className="card-body">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+        <div className="card bg-gradient-to-r from-primary to-secondary text-primary-content shadow-lg mt-6 compact">
+          <div className="card-body flex-row items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
                 <div className="avatar">
-                  <div className="w-16 rounded-full ring ring-primary-content ring-offset-base-100 ring-offset-2">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full ring ring-primary-content ring-offset-base-100 ring-offset-1">
                     <Image
                       src="/logo.jpg"
                       alt="Manager"
-                      width={64}
-                      height={64}
+                      width={48}
+                      height={48}
                       className="rounded-full"
                     />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold">Manager Pool</h3>
-                  <p className="text-sm opacity-80">Total system balance</p>
+                  <h3 className="text-base md:text-xl font-bold leading-tight">Manager Pool</h3>
+                  <p className="text-[10px] md:text-xs opacity-80">System Balance</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-4xl font-bold">
+                <p className="text-lg md:text-2xl font-black leading-tight">
                   {totalBalance.toFixed(2)} ৳
                 </p>
-                <p className="text-sm opacity-80">
+                <p className="text-[10px] md:text-xs opacity-80 uppercase font-bold tracking-widest">
                   {totalBalance >= 0 ? "Surplus" : "Deficit"}
                 </p>
               </div>
-            </div>
           </div>
         </div>
       </div>

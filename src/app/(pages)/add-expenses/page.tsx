@@ -4,7 +4,7 @@ import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import StepIndicator from "@/components/StepIndicator";
@@ -23,10 +23,16 @@ const AddExpenses = () => {
   const router = useRouter();
   const { polapains } = useKhoroch();
   const { setPolapainAuth } = usePolapainAuth();
-  const { handleSubmit, register, watch, setValue } = useForm<FormData>({
+  
+  // New state for selected members
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+
+  const { handleSubmit, register, watch, setValue, reset, getValues } = useForm<FormData>({
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
-      type: "food"
+      type: "food",
+      dibo: [],
+      dise: []
     }
   });
   
@@ -41,57 +47,135 @@ const AddExpenses = () => {
   const watchedDibo = watch("dibo");
   const watchedDise = watch("dise");
 
-  // Set default date on client side to avoid hydration mismatch
+  // Set default date on client side
   useEffect(() => {
     setDefaultDate(new Date().toISOString().split("T")[0]);
   }, []);
 
+  // Filtered members based on selection
+  const selectedMembers = useMemo(() => {
+    if (!polapains) return [];
+    return polapains.filter(p => selectedMemberIds.includes(p._id));
+  }, [polapains, selectedMemberIds]);
+
+  // Sync Form Arrays when selectedMembers changes.
+  useEffect(() => {
+    // Only init if we are moving forward to step 2/3/4/5 or if we are already in form steps
+    if (selectedMembers.length > 0) {
+        const currentDibo = getValues("dibo") || [];
+        // Helper to check if array matches selection
+        const isMatch = currentDibo.length === selectedMembers.length && 
+                        currentDibo.every((d, i) => d.id === selectedMembers[i]._id);
+        
+        if (!isMatch) {
+            const newDibo = selectedMembers.map(m => {
+                const existing = currentDibo.find(d => d.id === m._id);
+                return {
+                    id: m._id,
+                    name: m.name,
+                    amount: existing ? existing.amount : 0,
+                    avatar: m.avatar || ""
+                };
+            });
+            setValue("dibo", newDibo);
+            
+            const currentDise = getValues("dise") || [];
+            const newDise = selectedMembers.map(m => {
+                const existing = currentDise.find(d => d.id === m._id);
+                return {
+                    id: m._id,
+                    name: m.name,
+                    amount: existing ? existing.amount : 0,
+                    avatar: m.avatar || ""
+                };
+            });
+            setValue("dise", newDise);
+        }
+    }
+  }, [selectedMembers, setValue, getValues]); // Removed currentStep dependency to keep it synced always
+
   // Smart Scrolling
   useEffect(() => {
-    const activeCard = document.querySelector(".ring-primary");
+    const stepCardId = `step-card-${currentStep}`;
+    const activeCard = document.getElementById(stepCardId);
     if (activeCard) {
       setTimeout(() => {
         activeCard.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
+      }, 300); // Increased delay slightly
     }
   }, [currentStep]);
 
-  // Calculate totals
+  // Calculate totals - simplified to reduce complexity
   useEffect(() => {
-    if (watchedDibo) {
-      const total = watchedDibo.reduce(
-        (acc, curr) => acc + (Number(curr?.amount) || 0),
-        0
-      );
-      setDiboTotal(total);
-    }
+    // Calculate from the FORM values directly to ensure sync
+    const sub = watch((value, { name, type }) => {
+        if (name?.startsWith('dibo')) {
+             const total = (value.dibo as any[])?.reduce((acc, curr) => acc + (Number(curr?.amount) || 0), 0) || 0;
+             setDiboTotal(total);
+        }
+        if (name?.startsWith('dise')) {
+             const total = (value.dise as any[])?.reduce((acc, curr) => acc + (Number(curr?.amount) || 0), 0) || 0;
+             setDiseTotal(total);
+        }
+    });
+    return () => sub.unsubscribe();
+  }, [watch]);
+  
+  // Initial total calc on mount/change (in case watch doesn't fire immediately)
+  useEffect(() => {
+      if (watchedDibo) {
+          setDiboTotal(watchedDibo.reduce((acc, curr) => acc + (Number(curr?.amount) || 0), 0));
+      }
   }, [watchedDibo]);
-
+    
   useEffect(() => {
-    if (watchedDise) {
-      const total = watchedDise.reduce(
-        (acc, curr) => acc + (Number(curr?.amount) || 0),
-        0
-      );
-      setDiseTotal(total);
-    }
+      if (watchedDise) {
+          setDiseTotal(watchedDise.reduce((acc, curr) => acc + (Number(curr?.amount) || 0), 0));
+      }
   }, [watchedDise]);
 
   const handleEqualSplitDibo = () => {
-    if (!watchedAmount || !polapains?.length) return;
-    const equalAmount = (Number(watchedAmount) / polapains.length).toFixed(2);
-    polapains.forEach((_, i) => {
-      setValue(`dibo.${i}.amount`, Number(equalAmount));
-    });
-    toast.success("Split equally!");
+    if (!watchedAmount || !selectedMembers.length) return;
+    const equalAmount = (Number(watchedAmount) / selectedMembers.length).toFixed(2);
+    // Use proper array updates
+    const newDibo = selectedMembers.map((m) => ({
+        id: m._id,
+        name: m.name,
+        amount: Number(equalAmount),
+        avatar: m.avatar || ""
+    }));
+    setValue("dibo", newDibo, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    toast.success("Split equally among selected members!");
   };
 
   const handleManagerPaid = () => {
     if (!watchedAmount) return;
-    polapains?.forEach((_, i) => {
-      setValue(`dise.${i}.amount`, 0);
-    });
+    const newDise = selectedMembers.map((m) => ({
+        id: m._id,
+        name: m.name,
+        amount: 0,
+        avatar: m.avatar || ""
+    }));
+    setValue("dise", newDise, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     toast.success("Manager paid set!");
+  };
+
+  const handleToggleMember = (id: string) => {
+    setSelectedMemberIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(mId => mId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+     if (polapains) {
+         if (selectedMemberIds.length === polapains.length) {
+             setSelectedMemberIds([]);
+         } else {
+             setSelectedMemberIds(polapains.map(p => p._id));
+         }
+     }
   };
 
   const validateStep = (step: number): boolean => {
@@ -99,13 +183,19 @@ const AddExpenses = () => {
     const title = watch("title");
 
     switch (step) {
-      case 1:
+      case 1: // Selection
+        if (selectedMemberIds.length === 0) {
+            toast.error("Please select at least one member");
+            return false;
+        }
+        return true;
+      case 2: // Basic Info
         if (!title || !amount || amount <= 0) {
           toast.error("Please fill in title and amount");
           return false;
         }
         return true;
-      case 2:
+      case 3: // Who Pays
         if (Math.abs(Number(amount) - diboTotal) > 1) {
           toast.error(
             `Who pays total (${diboTotal.toFixed(2)}) must equal expense amount (${amount})`
@@ -113,7 +203,7 @@ const AddExpenses = () => {
           return false;
         }
         return true;
-      case 3:
+      case 4: // Who Paid
         // Allow BOTH Manager paid (0) OR full amount matched
         if (diseTotal !== 0 && Math.abs(Number(amount) - diseTotal) > 1) {
           toast.error(
@@ -129,7 +219,7 @@ const AddExpenses = () => {
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 5));
     }
   };
 
@@ -138,8 +228,16 @@ const AddExpenses = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    if (!validateStep(3)) return;
-    setFormPreview(data);
+    if (!validateStep(4)) return; // Validate the Who Paid step before review
+    // Filter data to only include selected members (extra safety, though the form arrays should be correct)
+    const filteredDibo = data.dibo.filter(d => selectedMemberIds.includes(d.id));
+    const filteredDise = data.dise.filter(d => selectedMemberIds.includes(d.id));
+    
+    setFormPreview({
+        ...data,
+        dibo: filteredDibo,
+        dise: filteredDise
+    });
     setShowConfirm(true);
   };
 
@@ -165,7 +263,7 @@ const AddExpenses = () => {
       });
   };
 
-  const stepLabels = ["Basic Info", "Who Pays", "Who Paid", "Review"];
+  const stepLabels = ["Select Members", "Basic Info", "Who Pays", "Who Paid", "Review"];
 
   return (
     <section className="w-full min-h-screen py-10 px-4 pb-24 md:pb-10">
@@ -174,15 +272,81 @@ const AddExpenses = () => {
 
         <StepIndicator
           currentStep={currentStep}
-          totalSteps={4}
+          totalSteps={5}
           stepLabels={stepLabels}
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Step 1: Basic Info */}
+          {/* Step 1: Member Selection */}
           <div
+            id="step-card-1"
             className={`card bg-base-200 shadow-xl ${
               currentStep === 1 ? "ring-2 ring-primary" : ""
+            }`}
+          >
+            <div className="card-body">
+              <div className="flex justify-between items-center mb-4">
+                 <h2 className="card-title text-2xl">👥 Select Members</h2>
+                 <button type="button" onClick={handleSelectAll} className="btn btn-sm btn-ghost">
+                    {polapains && selectedMemberIds.length === polapains.length ? "Deselect All" : "Select All"}
+                 </button>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                 {polapains?.map((member) => {
+                     const isSelected = selectedMemberIds.includes(member._id);
+                     return (
+                         <div 
+                             key={member._id}
+                             className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
+                                 isSelected 
+                                 ? "border-primary bg-primary/10" 
+                                 : "border-transparent bg-base-100 hover:bg-base-300"
+                             }`}
+                             onClick={() => handleToggleMember(member._id)}
+                         >
+                            <div className="avatar">
+                                <div className={`w-16 h-16 rounded-full ring ring-offset-2 ${isSelected ? "ring-primary" : "ring-transparent"}`}>
+                                    <Image 
+                                        src={member.avatar || "/avatar.jpg"} 
+                                        alt={member.name} 
+                                        width={64} 
+                                        height={64}
+                                        className="rounded-full"
+                                    />
+                                </div>
+                            </div>
+                            <span className="font-semibold text-center">{member.name}</span>
+                             {isSelected && (
+                                 <div className="badge badge-primary badge-sm">Selected</div>
+                             )}
+                         </div>
+                     );
+                 })}
+              </div>
+
+               {currentStep === 1 && (
+                <div className="card-actions justify-end mt-4">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleNext}
+                    disabled={selectedMemberIds.length === 0}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+
+          {/* Step 2: Basic Info */}
+          {currentStep >= 2 && (
+          <div
+            id="step-card-2"
+            className={`card bg-base-200 shadow-xl ${
+              currentStep === 2 ? "ring-2 ring-primary" : ""
             }`}
           >
             <div className="card-body">
@@ -199,7 +363,7 @@ const AddExpenses = () => {
                     placeholder="e.g., Lunch at restaurant"
                     className="input input-bordered w-full"
                     {...register("title", { required: true })}
-                    disabled={currentStep !== 1}
+                    disabled={currentStep !== 2}
                   />
                 </div>
 
@@ -214,7 +378,7 @@ const AddExpenses = () => {
                     step="0.01"
                     min="1"
                     {...register("amount", { required: true, min: 1 })}
-                    disabled={currentStep !== 1}
+                    disabled={currentStep !== 2}
                   />
                 </div>
 
@@ -227,7 +391,7 @@ const AddExpenses = () => {
                     className="input input-bordered w-full"
                     defaultValue={defaultDate}
                     {...register("date")}
-                    disabled={currentStep !== 1}
+                    disabled={currentStep !== 2}
                   />
                 </div>
 
@@ -239,7 +403,7 @@ const AddExpenses = () => {
                     className="select select-bordered w-full"
                     {...register("type")}
                     defaultValue="food"
-                    disabled={currentStep !== 1}
+                    disabled={currentStep !== 2}
                   >
                     <option value="food">🍔 Food</option>
                     <option value="grocery">🛒 Grocery</option>
@@ -254,31 +418,40 @@ const AddExpenses = () => {
                   </select>
                 </div>
               </div>
-              {currentStep === 1 && (
-                <div className="card-actions justify-end mt-4">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleNext}
-                  >
-                    Next →
-                  </button>
-                </div>
+              {currentStep === 2 && (
+                 <div className="card-actions justify-between mt-4">
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      onClick={handlePrevious}
+                    >
+                      ← Previous
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleNext}
+                    >
+                      Next →
+                    </button>
+                  </div>
               )}
             </div>
           </div>
+          )}
 
-          {/* Step 2: Who Pays (Dibo) */}
-          {currentStep >= 2 && (
+          {/* Step 3: Who Pays (Dibo) */}
+          {currentStep >= 3 && (
             <div
+              id="step-card-3"
               className={`card bg-base-200 shadow-xl ${
-                currentStep === 2 ? "ring-2 ring-primary" : ""
+                currentStep === 3 ? "ring-2 ring-primary" : ""
               }`}
             >
               <div className="card-body">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="card-title text-2xl">💰 Who Pays?</h2>
-                  {currentStep === 2 && (
+                  {currentStep === 3 && (
                     <button
                       type="button"
                       className="btn btn-sm btn-outline"
@@ -290,7 +463,7 @@ const AddExpenses = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {polapains?.map((polapain, i) => (
+                  {selectedMembers.map((polapain, i) => (
                     <div
                       key={polapain._id}
                       className="flex items-center gap-3 p-3 bg-base-100 rounded-lg"
@@ -315,14 +488,12 @@ const AddExpenses = () => {
                           className="input input-bordered input-sm w-full mt-1"
                           step="0.01"
                           defaultValue={
-                            watchedAmount
-                              ? (
-                                  Number(watchedAmount) / polapains.length
-                                ).toFixed(2)
+                              watchedAmount && currentStep === 3 && !getValues(`dibo.${i}.amount`) // Only suggest if empty
+                              ? (Number(watchedAmount) / selectedMembers.length).toFixed(2)
                               : 0
                           }
                           {...register(`dibo.${i}.amount`)}
-                          disabled={currentStep !== 2}
+                          disabled={currentStep !== 3}
                         />
                         <input
                           type="hidden"
@@ -347,13 +518,13 @@ const AddExpenses = () => {
                 <div className="alert alert-info mt-4">
                   <div className="flex justify-between w-full">
                     <span>Total who pays:</span>
-                    <span className="font-bold">
+                    <span className={`font-bold ${Math.abs(diboTotal - Number(watchedAmount)) > 1 ? 'text-error' : 'text-success'}`}>
                       {diboTotal.toFixed(2)} ৳ / {watchedAmount || 0} ৳
                     </span>
                   </div>
                 </div>
 
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                   <div className="card-actions justify-between mt-4">
                     <button
                       type="button"
@@ -375,17 +546,18 @@ const AddExpenses = () => {
             </div>
           )}
 
-          {/* Step 3: Who Paid (Dise) */}
-          {currentStep >= 3 && (
+          {/* Step 4: Who Paid (Dise) */}
+          {currentStep >= 4 && (
             <div
+              id="step-card-4"
               className={`card bg-base-200 shadow-xl ${
-                currentStep === 3 ? "ring-2 ring-primary" : ""
+                currentStep === 4 ? "ring-2 ring-primary" : ""
               }`}
             >
               <div className="card-body">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="card-title text-2xl">💳 Who Paid?</h2>
-                  {currentStep === 3 && (
+                  {currentStep === 4 && (
                     <button
                       type="button"
                       className="btn btn-sm btn-outline"
@@ -397,7 +569,7 @@ const AddExpenses = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {polapains?.map((polapain, i) => (
+                  {selectedMembers.map((polapain, i) => (
                     <div
                       key={polapain._id}
                       className="flex items-center gap-3 p-3 bg-base-100 rounded-lg"
@@ -423,7 +595,7 @@ const AddExpenses = () => {
                           step="0.01"
                           defaultValue={0}
                           {...register(`dise.${i}.amount`)}
-                          disabled={currentStep !== 3}
+                          disabled={currentStep !== 4}
                         />
                         <input
                           type="hidden"
@@ -454,7 +626,7 @@ const AddExpenses = () => {
                   </div>
                 </div>
 
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                   <div className="card-actions justify-between mt-4">
                     <button
                       type="button"
@@ -476,13 +648,19 @@ const AddExpenses = () => {
             </div>
           )}
 
-          {/* Step 4: Review */}
-          {currentStep === 4 && (
-            <div className="card bg-base-200 shadow-xl ring-2 ring-primary">
+          {/* Step 5: Review */}
+          {currentStep === 5 && (
+            <div id="step-card-5" className="card bg-base-200 shadow-xl ring-2 ring-primary">
               <div className="card-body">
                 <h2 className="card-title text-2xl mb-4">✅ Review & Submit</h2>
 
                 <div className="bg-base-100 p-4 rounded-lg space-y-3">
+                   <div className="flex justify-between">
+                     <span className="font-semibold">Participants:</span>
+                     <span className="text-right">
+                        {watchedDibo?.map(d => d.name).join(", ")}
+                     </span>
+                   </div>
                   <div className="flex justify-between">
                     <span className="font-semibold">Title:</span>
                     <span>{watch("title")}</span>
@@ -513,7 +691,7 @@ const AddExpenses = () => {
                     <div className="space-y-1">
                       {watchedDibo?.map(
                         (person, i) =>
-                          person.amount > 0 && (
+                          Number(person.amount) > 0 && (
                             <div
                               key={i}
                               className="flex justify-between text-sm"
@@ -537,7 +715,7 @@ const AddExpenses = () => {
                       ) > 0 ? (
                         watchedDise?.map(
                           (person, i) =>
-                            person.amount > 0 && (
+                            Number(person.amount) > 0 && (
                               <div
                                 key={i}
                                 className="flex justify-between text-sm"

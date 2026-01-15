@@ -72,12 +72,18 @@ const RecentActivity = () => {
 
   const getCategoryIcon = (type: string) => {
     switch (type) {
-      case "food":
-        return "🍔";
-      case "others":
-        return "📦";
-      default:
-        return "📝";
+      case "food": return "🍔";
+      case "grocery": return "🛒";
+      case "transportation": return "🚗";
+      case "house_rent": return "🏠";
+      case "utilities": return "💡";
+      case "entertainment": return "🎬";
+      case "healthcare": return "💊";
+      case "shopping": return "🛍️";
+      case "personal_care": return "🧖";
+      case "others": return "📦";
+      case "add-taka": return "💰";
+      default: return "📝";
     }
   };
 

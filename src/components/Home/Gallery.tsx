@@ -15,7 +15,7 @@ interface Photo {
   isPrivate?: boolean;
 }
 
-const GalleryPage = () => {
+const Gallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -47,7 +47,7 @@ const GalleryPage = () => {
   };
 
   return (
-    <section className="w-full px-4 py-8 pb-24 md:pb-8 min-h-screen">
+    <section className="w-full px-4 py-8 pb-24 md:pb-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
@@ -134,4 +134,4 @@ const GalleryPage = () => {
   );
 };
 
-export default GalleryPage;
+export default Gallery;

@@ -27,6 +27,12 @@ const khorochSchema = new Schema<Khoroch>({
   isApproved: { type: Boolean, default: false },
 });
 
+// Indices for performance
+khorochSchema.index({ "dibo.id": 1, date: -1 });
+khorochSchema.index({ type: 1 });
+khorochSchema.index({ "dise.id": 1, "dise.amount": 1 });
+khorochSchema.index({ "dibo.id": 1, "dibo.amount": 1 });
+
 // Force delete the model from cache in development to ensure schema changes are picked up
 if (process.env.NODE_ENV === "development") {
   delete models.Khoroch;

@@ -42,8 +42,8 @@ export async function GET(req: NextRequest) {
   // Participant filter
   if (participant) {
     query.$or = [
-      { "dise.id": participant },
-      { "dibo.id": participant }
+      { dise: { $elemMatch: { id: participant, amount: { $gt: 0 } } } },
+      { dibo: { $elemMatch: { id: participant, amount: { $gt: 0 } } } }
     ];
   }
 
@@ -63,6 +63,30 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const skipStats = url.searchParams.get("skipStats") === "true";
+
+    if (skipStats) {
+        const [expenses, total] = await Promise.all([
+            KhorochModel.find(query)
+                .sort(sort as any)
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+            KhorochModel.countDocuments(query)
+        ]);
+
+        return Response.json({
+            expenses,
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+            stats: { totalAmount: 0 },
+        });
+    }
+
     const pipeline: any[] = [
       { $match: query },
     ];
@@ -70,7 +94,7 @@ export async function GET(req: NextRequest) {
     // Sorting stage
     pipeline.push({ $sort: sort as any });
 
-    const skipStats = url.searchParams.get("skipStats") === "true";
+
 
     const facetStage: any = {
       expenses: [
@@ -88,16 +112,6 @@ export async function GET(req: NextRequest) {
           $group: {
             _id: null,
             totalAmount: { $sum: "$amount" },
-            foodAmount: {
-              $sum: {
-                $cond: [{ $eq: ["$type", "food"] }, "$amount", 0],
-              },
-            },
-            othersAmount: {
-              $sum: {
-                $cond: [{ $eq: ["$type", "others"] }, "$amount", 0],
-              },
-            },
           },
         },
       ];
@@ -113,8 +127,6 @@ export async function GET(req: NextRequest) {
     
     let stats = {
       totalAmount: 0,
-      foodAmount: 0,
-      othersAmount: 0,
     };
 
     if (!skipStats && data.stats && data.stats.length > 0) {

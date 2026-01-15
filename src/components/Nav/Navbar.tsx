@@ -1,11 +1,27 @@
+"use client";
 import React, { ReactNode } from "react";
 import { MdMenu } from "react-icons/md";
 import NavLinks from "./NavLinks";
 import Logo from "../../../public/logo.jpg";
 import Image from "next/image";
 import NotificationBell from "./NotificationBell";
+import { usePathname } from "next/navigation";
 
 const Navbar = ({ children }: { children: ReactNode }) => {
+  const pathname = usePathname();
+
+  const getTitle = (path: string) => {
+      if (path === "/") return "Control Room";
+      if (path === "/dashboard") return "Dashboard";
+      
+      const parts = path.substring(1).split("/");
+      if (parts.length > 0) {
+           const title = parts[0].replace(/-/g, " ");
+           return title.charAt(0).toUpperCase() + title.slice(1);
+      }
+      return "Control Room";
+  };
+
   return (
     <div className="drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -21,18 +37,20 @@ const Navbar = ({ children }: { children: ReactNode }) => {
               <MdMenu className="w-7 h-7" />
             </label>
           </div>
-          <div className="mx-2 flex-1 px-2">
+          <div className="mx-2 flex-1 px-2 items-center gap-4">
             <Image src={Logo} alt="Logo" className="w-12 h-12 rounded" />
+            <h1 className="text-xl font-bold hidden sm:block">
+                {getTitle(pathname)}
+            </h1>
           </div>
           
-          {/* Notification Bell (Visible on both mobile and desktop) */}
+          {/* Notification Bell */}
           <div className="flex-none">
              <NotificationBell />
           </div>
 
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
-              {/* Navbar menu content here */}
               <NavLinks />
             </ul>
           </div>
@@ -47,7 +65,6 @@ const Navbar = ({ children }: { children: ReactNode }) => {
           className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 min-h-full w-80 p-4">
-          {/* Sidebar content here */}
           <NavLinks />
         </ul>
       </div>

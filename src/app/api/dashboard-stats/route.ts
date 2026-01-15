@@ -1,7 +1,10 @@
 import KhorochModel from "@/models/Khoroch";
 import { NextRequest } from "next/server";
+import PolapainModel from "@/models/Polapain";
+import dbConnect from "@/lib/dbConnect";
 
 export async function GET(req: NextRequest) {
+  await dbConnect();
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
 
@@ -47,13 +50,19 @@ export async function GET(req: NextRequest) {
       },
     ];
 
-    const statsResult = await KhorochModel.aggregate(pipeline);
+    // Run fetches in parallel
+    const [statsResult, user] = await Promise.all([
+      KhorochModel.aggregate(pipeline),
+      PolapainModel.findById(userId).select("balance").lean(),
+    ]);
+
     const stats = statsResult[0];
 
     return Response.json({
       last30DaysExpenses: stats.last30Days[0]?.total || 0,
       thisMonthExpenses: stats.thisMonth[0]?.total || 0,
       totalExpenses: stats.total[0]?.total || 0,
+      userBalance: user?.balance || 0,
     });
   } catch (error) {
     console.error("Stats Error:", error);

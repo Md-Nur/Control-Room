@@ -28,13 +28,13 @@ const NavLinks = () => {
 
   return (
     <>
-      <NavRoute name="home" route="/dashboard" />
+      <NavRoute name="home" route="/" />
       {!loading && polapainAuth ? (
         <>
+          <NavRoute name="dashboard" route="/dashboard" />
           <NavRoute name="balances" route="/all-balance" />
           <NavRoute name="expenses" route="/all-expenses" />
           <NavRoute name="add expense" route="/add-expenses" />
-          <NavRoute name="gallery" route="/all-img" />
           <NavRoute name="meals" route="/meal-manager" />
           <NavRoute name="add image" route="/add-img" />
           <NavRoute name="profile" route="/profile" />

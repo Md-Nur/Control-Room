@@ -18,8 +18,6 @@ const Expenses = () => {
   // Stats state
   const [stats, setStats] = useState({
     totalAmount: 0,
-    foodAmount: 0,
-    othersAmount: 0,
   });
 
   // Pagination state
@@ -43,6 +41,7 @@ const Expenses = () => {
         sort,
         search: debouncedSearch,
         type: typeFilter,
+        excludeType: "add-taka",
         ...(dateFrom && { dateFrom }),
         ...(dateTo && { dateTo }),
       });
@@ -77,6 +76,12 @@ const Expenses = () => {
         return "📦";
       case "add-taka":
         return "💰";
+      case "grocery":
+        return "🛒";
+      case "transportation":
+        return "🚗";
+      case "entertainment":
+        return "🎬";
       default:
         return "📝";
     }
@@ -91,6 +96,7 @@ const Expenses = () => {
           sort,
           search: debouncedSearch,
           type: typeFilter,
+          excludeType: "add-taka",
           ...(dateFrom && { dateFrom }),
           ...(dateTo && { dateTo }),
         });
@@ -131,275 +137,172 @@ const Expenses = () => {
       }
   };
 
-  // Map API stats to component variables
   const totalExpenses = stats.totalAmount;
-  // Note: We don't have arrays of food/other expenses anymore, 
-  // but we only used them for length or sum. The UI used `.reduce` or `.length`.
-  // I need to update the UI to avoid reducing arrays.
-  // The UI code below line 130 uses `foodExpenses.reduce(...)`
-  // I must update that part too.
-  
-  // For now, I'll pass simple numbers or mock arrays if strictly needed, 
-  // but better to replace the usage in the render method.
-  
-  // This replacement block ends at line 115.
-  // I need to update the render method in a separate call or extend this one.
-  // I will extend this replacement to include the variable mapping.
-  
-  // paginatedExpenses is now just expenses
   const paginatedExpenses = expenses;
-  // filteredExpenses.length usage needs to be replaced with totalItems
-  const filteredExpenses = { length: totalItems }; // Hacky mock to satisfy simple checks? No, `filteredExpenses` is used in .map().
-  // Wait, `paginatedExpenses` is used for mapping. `filteredExpenses` was used for length checks and pagination controls.
-  
-  // I need to carefully replace the render usages.
-  // This tool call only replaces up to line 115.
-  // The UI starts mainly after that. 
-  // I will commit this setup part first, then do a second pass to fix the Render part.
+  const filteredExpenses = { length: totalItems };
+
+  const CATEGORIES = [
+      "food", "grocery", "transportation", "house_rent", "utilities", 
+      "entertainment", "healthcare", "shopping", "personal_care", "others"
+  ];
 
   return (
-    <section className="w-full min-h-screen bg-base-100 py-8 px-4 pb-24 md:pb-12">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Expense Tracker
-          </h1>
-          <p className="text-base-content/60">
-            Track and manage your shared expenses efficiently
-          </p>
+    <section className="w-full min-h-screen bg-base-100 py-6 px-3 pb-24 md:pb-12">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Header & Stats */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left">
+                <h1 className="text-3xl font-black tracking-tight text-primary">Expenses</h1>
+                <p className="text-xs font-mono opacity-60">TRACKER v2.0</p>
+            </div>
+
+            <div className="flex gap-3">
+                 {/* Total Badge */}
+                <div className="stats shadow bg-base-200/50 border border-base-content/10">
+                    <div className="stat py-2 px-4">
+                        <div className="stat-title text-xs font-bold opacity-60 uppercase">Total Spent</div>
+                        <div className="stat-value text-xl md:text-2xl text-primary">{totalExpenses.toFixed(0)} ৳</div>
+                    </div>
+                </div>
+                 {/* Average Badge (Only visible on larger screens to keep mobile minimal) */}
+                <div className="stats shadow bg-base-200/50 border border-base-content/10 hidden sm:inline-grid">
+                    <div className="stat py-2 px-4">
+                        <div className="stat-title text-xs font-bold opacity-60 uppercase">Avg/Txn</div>
+                        <div className="stat-value text-xl md:text-2xl text-secondary">
+                             {totalItems ? (totalExpenses / totalItems).toFixed(0) : "0"} ৳
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="stats shadow-lg bg-base-100/50 backdrop-blur-md border border-base-content/5 hover:border-primary/50 transition-colors">
-            <div className="stat place-items-center p-4">
-              <div className="stat-title text-xs font-bold uppercase tracking-wider opacity-60">Total Spent</div>
-              <div className="stat-value text-primary text-2xl md:text-3xl mt-1">{totalExpenses.toFixed(2)} ৳</div>
-              <div className="stat-desc">All time</div>
-            </div>
-          </div>
-          
-          <div className="stats shadow-lg bg-base-100/50 backdrop-blur-md border border-base-content/5 hover:border-warning/50 transition-colors">
-            <div className="stat place-items-center p-4">
-              <div className="stat-title text-xs font-bold uppercase tracking-wider opacity-60">Food</div>
-              <div className="stat-value text-warning text-2xl md:text-3xl mt-1">
-                {stats.foodAmount.toFixed(2)} ৳
-              </div>
-              <div className="stat-desc">This filter</div>
-            </div>
-          </div>
- 
-          <div className="stats shadow-lg bg-base-100/50 backdrop-blur-md border border-base-content/5 hover:border-info/50 transition-colors">
-            <div className="stat place-items-center p-4">
-              <div className="stat-title text-xs font-bold uppercase tracking-wider opacity-60">Others</div>
-              <div className="stat-value text-info text-2xl md:text-3xl mt-1">
-                {stats.othersAmount.toFixed(2)} ৳
-              </div>
-              <div className="stat-desc">This filter</div>
-            </div>
-          </div>
- 
-          <div className="stats shadow-lg bg-base-100/50 backdrop-blur-md border border-base-content/5 hover:border-secondary/50 transition-colors">
-            <div className="stat place-items-center p-4">
-              <div className="stat-title text-xs font-bold uppercase tracking-wider opacity-60">Average</div>
-              <div className="stat-value text-secondary text-2xl md:text-3xl mt-1">
-                {totalItems
-                  ? (totalExpenses / totalItems).toFixed(2)
-                  : "0.00"}{" "}
-                ৳
-              </div>
-              <div className="stat-desc">Per transaction</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Controls Section */}
-        <div className="card bg-base-100/80 backdrop-blur-md shadow-xl border border-base-content/5 z-10 w-full overflow-visible">
-          <div className="card-body p-4 gap-4">
-            <div className="flex flex-col lg:flex-row gap-4 justify-between">
-              {/* Search */}
-              <div className="form-control flex-1">
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</span>
-                  <input
+        {/* Controls - Sticky */}
+        <div className="flex flex-col gap-3 sticky top-0 z-30 bg-base-100/95 backdrop-blur py-2 border-b border-base-content/5 md:static md:bg-transparent md:border-0 md:p-0">
+            {/* Search Bar */}
+            <div className="w-full relative">
+                <input
                     type="text"
                     placeholder="Search expenses..."
-                    className="input input-bordered w-full pl-12 bg-base-200/50 focus:bg-base-100 transition-all"
+                    className="input input-bordered w-full h-10 pl-10 bg-base-200/50 focus:bg-base-100 rounded-full text-sm"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base opacity-40">🔍</span>
+            </div>
 
-              {/* Filters */}
-              <div className="flex flex-wrap gap-2 justify-center">
-                {(["all", "food", "others"] as const).map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setTypeFilter(type)}
-                    className={`btn btn-sm px-6 capitalize rounded-full transition-all ${
-                      typeFilter === type 
-                        ? "btn-primary shadow-lg scale-105" 
-                        : "btn-ghost bg-base-200/50 hover:bg-base-200"
-                    }`}
-                  >
-                    {type === "all" ? "All" : type === "food" ? "🍔 Food" : "📦 Others"}
-                  </button>
-                ))}
-              </div>
-
-              {/* Sort & Date */}
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-end items-center">
-                <select
-                  onChange={(e) => setSort(e.target.value)}
-                  className="select select-bordered select-sm bg-base-200/50 flex-1 md:flex-none"
-                  value={sort}
+            {/* Actions Bar */}
+            <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar md:flex-wrap md:pb-0">
+                
+                {/* Type Filter Select */}
+                <select 
+                    className="select select-bordered select-sm rounded-full bg-base-200/50 max-w-[150px]"
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value)}
                 >
-                  <option value="">Sort by...</option>
-                  <option value="date">Date</option>
-                  <option value="_id">Added</option>
+                    <option value="all">Filer: All Types</option>
+                    {CATEGORIES.map(cat => (
+                        <option key={cat} value={cat} className="capitalize">{cat}</option>
+                    ))}
                 </select>
 
-                <div className="join flex-1 md:flex-none justify-center">
-                   <input
+                <div className="divider divider-horizontal w-1 m-0 opacity-20 h-8"></div>
+
+                {/* Sort */}
+                <select
+                  onChange={(e) => setSort(e.target.value)}
+                  className="select select-bordered select-sm rounded-full bg-base-200/50 min-w-[110px]"
+                  value={sort}
+                >
+                  <option value="">Sort: Default</option>
+                  <option value="date">📅 Date</option>
+                  <option value="_id">🆕 Added</option>
+                </select>
+
+                {/* Date Inputs */}
+                <input
                     type="date"
-                    className="input input-bordered input-sm join-item w-full md:w-32 bg-base-200/50"
+                    className="input input-bordered input-sm w-32 rounded-full bg-base-200/50 text-xs"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                  />
-                  <input
-                    type="date"
-                    className="input input-bordered input-sm join-item w-full md:w-32 bg-base-200/50"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                  />
-                </div>
-                
-                <div className="flex gap-2">
-                  {(dateFrom || dateTo) && (
-                    <button
-                      className="btn btn-sm btn-ghost btn-circle text-error"
-                      onClick={() => {
-                        setDateFrom("");
-                        setDateTo("");
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
+                />
 
-                   <button
-                    className="btn btn-sm btn-circle btn-success text-white shadow-lg"
+                <div className="flex-1"></div>
+                
+                 <button
+                    className="btn btn-circle btn-sm btn-ghost text-success"
                     onClick={exportToCSV}
                     disabled={filteredExpenses.length === 0}
                     title="Export CSV"
-                  >
+                 >
                     📥
-                  </button>
-                </div>
-              </div>
+                 </button>
             </div>
-          </div>
         </div>
 
-        {/* Content Section */}
-        <div className="relative min-h-[400px]">
+        {/* Expenses List */}
+        <div className="min-h-[300px]">
           {loading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-100/50 backdrop-blur-sm z-50 rounded-box">
-              <CreativeLoader />
-            </div>
-          ) : totalItems === 0 && !loading ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-base-200/30 rounded-box border border-dashed border-base-content/20">
-              <div className="text-6xl mb-4 opacity-50">📂</div>
-              <h3 className="text-xl font-bold opacity-75">No expenses found</h3>
-              <p className="text-base-content/60">Try adjusting your filters</p>
-            </div>
+             <div className="py-20"><CreativeLoader /></div>
+          ) : totalItems === 0 ? (
+             <div className="text-center py-20 opacity-50 font-mono text-sm">No records found.</div>
           ) : (
             <>
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto bg-base-100/90 backdrop-blur shadow-xl rounded-2xl border border-base-content/5">
-                <table className="table table-zebra w-full">
-                  <thead className="bg-base-200/50 text-base-content/70">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto rounded-xl border border-base-content/10 bg-base-100 shadow-sm">
+                <table className="table table-sm">
+                  <thead className="bg-base-200/50">
                     <tr>
-                      <th className="py-4 pl-6">Type</th>
-                      <th>Details</th>
                       <th>Date</th>
-                      <th>Payer(s)</th>
-                      <th>Beneficiary</th>
-                      <th className="pr-6 text-right">Amount</th>
+                      <th>Title</th>
+                      <th>Paid By</th>
+                      <th>Split Among</th>
+                      <th className="text-right">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {paginatedExpenses.map((expense) => (
-                      <tr key={expense._id.toString()} className="hover:bg-base-200/50 transition-colors group">
-                        <td className="pl-6">
-                          <div className="w-12 h-12 rounded-xl bg-base-200 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
-                            {getCategoryIcon(expense.type)}
-                          </div>
+                      <tr key={expense._id.toString()} className="hover:bg-base-200/30 border-b border-base-content/5 last:border-0">
+                        <td className="w-32 text-xs opacity-70 font-mono">
+                            {new Date(expense.date).toLocaleDateString()}
                         </td>
                         <td>
-                          <div className="font-bold text-lg">{expense.title}</div>
-                          <div className="badge badge-sm badge-ghost opacity-70 capitalize mt-1">
-                            {expense.type}
-                          </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg opacity-80">{getCategoryIcon(expense.type)}</span>
+                                <span className="font-bold">{expense.title}</span>
+                            </div>
                         </td>
                         <td>
-                          <div className="font-medium" suppressHydrationWarning>
-                            {new Date(expense.date).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </div>
-                          <div className="text-xs opacity-50" suppressHydrationWarning>
-                             {new Date(expense.date).getFullYear()}
-                          </div>
+                            <div className="flex -space-x-2">
+                                {expense.dise.map(p => p.amount > 0 && (
+                                    <div key={p.id} className="avatar tooltip" data-tip={`${p.name}: ${p.amount}`}>
+                                        <div className="w-6 rounded-full ring ring-base-100 ring-offset-1">
+                                            <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={24} height={24} />
+                                        </div>
+                                    </div>
+                                ))}
+                                {expense.dise.every(p => p.amount === 0) && (
+                                    <div className="avatar tooltip" data-tip={`Manager: ${expense.amount}`}>
+                                        <div className="w-6 rounded-full ring ring-base-100 ring-offset-1">
+                                            <Image src="/logo.jpg" alt="Manager" width={24} height={24} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </td>
                         <td>
-                          <div className="flex flex-col gap-1">
-                              {expense.dise.map((p) => p.amount >= 0.01 && (
-                                 <div key={p.id} className="flex items-center gap-2 text-sm bg-base-200/50 p-1 rounded-lg pr-2 w-fit">
-                                   <div className="avatar">
-                                     <div className="w-6 rounded-full">
-                                       <Image src={p.avatar || "/avatar.jpg"} width={24} height={24} alt={p.name} />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium opacity-80">{p.name}</span>
-                                   <span className="font-bold text-success">+{p.amount.toFixed(2)} ৳</span>
-                                 </div>
-                              ))}
-                              {expense.dise.reduce((a, p) => a + p.amount, 0) < 0.01 && (
-                                 <div className="flex items-center gap-2 text-sm bg-base-200/50 p-1 rounded-lg pr-2 w-fit">
-                                   <div className="avatar">
-                                     <div className="w-6 rounded-full">
-                                       <Image src="/logo.jpg" width={24} height={24} alt="Manager" />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium opacity-80">Manager</span>
-                                   <span className="font-bold text-success">+{expense.amount.toFixed(2)} ৳</span>
-                                 </div>
-                              )}
-                          </div>
+                             <div className="flex -space-x-2">
+                                {expense.dibo.map(p => p.amount > 0 && (
+                                    <div key={p.id} className="avatar tooltip" data-tip={`${p.name}: ${p.amount}`}>
+                                        <div className="w-6 rounded-full ring ring-base-100 ring-offset-1 grayscale opacity-80">
+                                            <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={24} height={24} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </td>
-                        <td>
-                          <div className="flex flex-col gap-1">
-                              {expense.dibo.map((p) => p.amount >= 0.01 && (
-                                 <div key={p.id} className="flex items-center gap-2 text-sm bg-base-200/50 p-1 rounded-lg pr-2 w-fit">
-                                    <div className="avatar">
-                                     <div className="w-6 rounded-full">
-                                       <Image src={p.avatar || "/avatar.jpg"} width={24} height={24} alt={p.name} />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium opacity-80">{p.name}</span>
-                                   <span className="font-bold text-error">-{p.amount.toFixed(2)} ৳</span>
-                                 </div>
-                              ))}
-                          </div>
-                        </td>
-                        <td className="text-right pr-6">
-                          <div className="font-black text-primary text-xl">
+                        <td className="text-right font-black text-primary">
                             {expense.amount.toFixed(2)} ৳
-                          </div>
                         </td>
                       </tr>
                     ))}
@@ -407,122 +310,95 @@ const Expenses = () => {
                 </table>
               </div>
 
-              {/* Mobile Card View */}
-              <div className="md:hidden grid gap-4">
+              {/* Mobile Cards */}
+              <div className="md:hidden grid gap-3">
                 {paginatedExpenses.map((expense) => (
-                  <div key={expense._id.toString()} className="card bg-base-100 shadow-md border border-base-content/5">
-                    <div className="card-body p-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-base-200 flex items-center justify-center text-2xl shadow-inner">
-                            {getCategoryIcon(expense.type)}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg leading-tight">{expense.title}</h3>
-                            <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1" suppressHydrationWarning>
-                               📅 {new Date(expense.date).toLocaleDateString()}
+                    <div key={expense._id.toString()} className="card bg-base-100 shadow-sm border border-base-content/10 compact p-0">
+                        <div className="card-body flex-row justify-between items-center p-3">
+                            <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="text-2xl bg-base-200/50 p-2 rounded-lg">
+                                    {getCategoryIcon(expense.type)}
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="font-bold truncate text-sm">{expense.title}</h3>
+                                    <div className="flex flex-col gap-1 mt-1">
+                                         {/* Paid By Row */}
+                                         <div className="flex items-center gap-1 text-xs opacity-70">
+                                            <span>Paid by:</span>
+                                            {expense.dise.every(p => p.amount === 0) ? (
+                                                <div className="flex items-center gap-1">
+                                                    <div className="avatar w-4 h-4">
+                                                        <div className="rounded-full">
+                                                            <Image src="/logo.jpg" alt="Manager" width={16} height={16} />
+                                                        </div>
+                                                    </div>
+                                                    <span className="font-bold">Manager ({expense.amount.toFixed(0)})</span>
+                                                </div>
+                                            ) : (
+                                                <span className="font-bold">
+                                                    {expense.dise.find(d => d.amount > 0)?.name.split(' ')[0]}
+                                                </span>
+                                            )}
+                                         </div>
+                                         
+                                         {/* Date & Split Row */}
+                                         <div className="flex items-center gap-2">
+                                             <span className="text-xs opacity-50 font-mono">
+                                                 {new Date(expense.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
+                                             </span>
+                                         {/* Improved Split Preview in Mobile Card */}
+                                         <div className="flex -space-x-1">
+                                            {expense.dibo.slice(0, 3).map(p => p.amount > 0 && (
+                                                <div key={p.id} className="avatar w-4 h-4">
+                                                    <div className="rounded-full grayscale ring ring-base-100 ring-offset-0">
+                                                        <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={16} height={16} />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {expense.dibo.filter(p => p.amount > 0).length > 3 && (
+                                                <div className="w-4 h-4 rounded-full bg-base-300 text-[8px] flex items-center justify-center font-bold">
+                                                    +{expense.dibo.filter(p => p.amount > 0).length - 3}
+                                                </div>
+                                            )}
+                                         </div>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
                         </div>
-                        <div className="badge badge-lg badge-primary font-bold">
-                          {expense.amount.toFixed(2)} ৳
+                            <div className="text-right whitespace-nowrap">
+                                <span className="font-black text-lg text-primary block">{expense.amount.toFixed(0)} ৳</span>
+                            </div>
                         </div>
-                      </div>
-                      
-                      <div className="divider my-2"></div>
-                      
-                      <div className="grid grid-cols-1 gap-2 text-sm mt-2">
-                        <div className="bg-base-200/30 p-2 rounded-lg">
-                          <div className="opacity-60 mb-2 text-xs uppercase font-bold">Given By</div>
-                          <div className="flex flex-wrap gap-2">
-                              {expense.dise.map((p) => p.amount >= 0.01 && (
-                                 <div key={p.id} className="flex items-center gap-2 bg-base-100 p-1 rounded-md border border-base-content/5">
-                                   <div className="avatar">
-                                     <div className="w-5 rounded-full">
-                                       <Image src={p.avatar || "/avatar.jpg"} width={20} height={20} alt={p.name} />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium text-xs">{p.name}</span>
-                                   <span className="font-bold text-success text-xs">+{p.amount.toFixed(2)}</span>
-                                 </div>
-                              ))}
-                              {expense.dise.reduce((a, p) => a + p.amount, 0) < 0.01 && (
-                                 <div className="flex items-center gap-2 bg-base-100 p-1 rounded-md border border-base-content/5">
-                                   <div className="avatar">
-                                     <div className="w-5 rounded-full">
-                                       <Image src="/logo.jpg" width={20} height={20} alt="Manager" />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium text-xs">Manager</span>
-                                   <span className="font-bold text-success text-xs">+{expense.amount.toFixed(2)}</span>
-                                 </div>
-                              )}
-                          </div>
-                        </div>
-                        <div className="bg-base-200/30 p-2 rounded-lg">
-                          <div className="opacity-60 mb-2 text-xs uppercase font-bold">Using By</div>
-                          <div className="flex flex-wrap gap-2">
-                              {expense.dibo.map((p) => p.amount >= 0.01 && (
-                                 <div key={p.id} className="flex items-center gap-2 bg-base-100 p-1 rounded-md border border-base-content/5">
-                                    <div className="avatar">
-                                     <div className="w-5 rounded-full">
-                                       <Image src={p.avatar || "/avatar.jpg"} width={20} height={20} alt={p.name} />
-                                     </div>
-                                   </div>
-                                   <span className="font-medium text-xs">{p.name}</span>
-                                   <span className="font-bold text-error text-xs">-{p.amount.toFixed(2)}</span>
-                                 </div>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                  </div>
                 ))}
               </div>
             </>
           )}
 
-          {/* Pagination */}
+          {/* Simple Pagination */}
           {filteredExpenses.length > 0 && (
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 bg-base-100/80 backdrop-blur p-4 rounded-xl border border-base-content/5 shadow-sm">
-              <div className="text-sm text-base-content/70">
-                Showing <span className="font-bold text-primary">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
-                <span className="font-bold text-primary">{Math.min(currentPage * itemsPerPage, filteredExpenses.length)}</span> of{" "}
-                <span className="font-bold text-primary">{filteredExpenses.length}</span> results
-              </div>
-              
-              <div className="join shadow-sm">
-                 <button
-                  className="join-item btn btn-sm hover:btn-primary"
+            <div className="flex justify-center mt-8 join">
+                <button
+                  className="join-item btn btn-sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                 >
-                  « Prev
+                  «
                 </button>
-                
-                {/* Simplified Pagination for Mobile to prevent overflow */}
-                <div className="join-item btn btn-sm bg-base-100 pointer-events-none hidden md:flex">
-                   Page {currentPage} of {Math.ceil(filteredExpenses.length / itemsPerPage)}
+                <div className="join-item btn btn-sm pointer-events-none bg-base-100">
+                    Page {currentPage}
                 </div>
-
                 <button
-                  className="join-item btn btn-sm hover:btn-primary"
+                  className="join-item btn btn-sm"
                   onClick={() =>
                     setCurrentPage((p) =>
-                      Math.min(
-                        Math.ceil(filteredExpenses.length / itemsPerPage),
-                        p + 1
-                      )
+                      Math.min(Math.ceil(filteredExpenses.length / itemsPerPage), p + 1)
                     )
                   }
-                  disabled={
-                    currentPage === Math.ceil(filteredExpenses.length / itemsPerPage)
-                  }
+                  disabled={currentPage === Math.ceil(filteredExpenses.length / itemsPerPage)}
                 >
-                  Next »
+                  »
                 </button>
-              </div>
             </div>
           )}
         </div>

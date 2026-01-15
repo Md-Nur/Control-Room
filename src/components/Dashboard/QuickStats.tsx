@@ -24,19 +24,12 @@ const QuickStats = () => {
 
     const fetchData = async () => {
       try {
-        // Fetch user's balance
-        const polapainsRes = await axios.get<Polapain[]>("/api/polapain");
-        const currentUser = polapainsRes.data.find(
-          (p) => p._id === polapainAuth._id
-        );
-        if (currentUser) {
-          setUserBalance(currentUser.balance);
-        }
-
-        // Fetch Server-Side Stats
+        // Fetch All Stats (Server-Side Logic)
         const statsRes = await axios.get(`/api/dashboard-stats?userId=${polapainAuth._id}`);
+        
         setLast30DaysExpenses(statsRes.data.last30DaysExpenses);
         setMonthlyExpenses(statsRes.data.thisMonthExpenses);
+        setUserBalance(statsRes.data.userBalance);
         
       } catch (error) {
         console.error("Error fetching stats:", error);
