@@ -39,6 +39,7 @@ const MealManager = () => {
   const [selecteduserId, setSelectedUserId] = useState<string>(""); 
   const [viewMode, setViewMode] = useState<"calendar" | "summary">("calendar");
   const [summaryData, setSummaryData] = useState<MealSummary[]>([]);
+  const [allowHistoryEditing, setAllowHistoryEditing] = useState(false);
 
   const fetchPolapains = useCallback(async () => {
      try {
@@ -138,7 +139,7 @@ const MealManager = () => {
     // Default new record structure
     const newRecord = existingRecord
       ? { ...existingRecord }
-      : { date: date.toISOString(), breakfast: false, lunch: false, dinner: false };
+      : { date: format(date, "yyyy-MM-dd"), breakfast: false, lunch: false, dinner: false };
 
     newRecord[type] = !newRecord[type];
     
@@ -154,7 +155,7 @@ const MealManager = () => {
             await axios.delete("/api/meals", {
                 data: {
                     userId: selecteduserId,
-                    date: date.toISOString()
+                    date: format(date, "yyyy-MM-dd")
                 }
             });
         } catch {
@@ -164,7 +165,7 @@ const MealManager = () => {
     } else {
         // Update UI
         if (existingRecord) {
-            setMeals(meals.map(m => m._id === existingRecord._id ? newRecord : m));
+            setMeals(meals.map(m => isSameDay(new Date(m.date), date) ? newRecord : m));
         } else {
             setMeals([...meals, newRecord]);
         }
@@ -174,7 +175,7 @@ const MealManager = () => {
             await axios.post("/api/meals", {
                 userId: selecteduserId,
                 ...newRecord,
-                date: date.toISOString()
+                date: format(date, "yyyy-MM-dd")
             });
         } catch {
             toast.error("Failed to update");
@@ -224,6 +225,18 @@ const MealManager = () => {
              <span className="font-bold w-32 text-center">{format(currentMonth, "MMMM yyyy")}</span>
              <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))} className="btn btn-sm btn-ghost">▶</button>
           </div>
+
+          {viewMode === "calendar" && (
+            <div className="flex items-center gap-2 bg-base-100 p-2 rounded-lg border border-base-200">
+                <span className="text-xs font-semibold opacity-70">HISTORY MODE</span>
+                <input 
+                    type="checkbox" 
+                    className="toggle toggle-sm toggle-primary" 
+                    checked={allowHistoryEditing}
+                    onChange={(e) => setAllowHistoryEditing(e.target.checked)}
+                />
+            </div>
+          )}
         </div>
 
         {/* Manager Controls: User Selector */}
@@ -321,29 +334,42 @@ const MealManager = () => {
                     const record = meals.find(m => isSameDay(new Date(m.date), day));
                     const isDefault = record && !record.breakfast && !record.lunch && !record.dinner;
                     const isToday = isSameDay(day, new Date());
-                    const isFuture = day > new Date();
+                    
+                    const todayAtMidnight = new Date();
+                    todayAtMidnight.setHours(0,0,0,0);
+                    const dayAtMidnight = new Date(day);
+                    dayAtMidnight.setHours(0,0,0,0);
+
+                    const isFuture = dayAtMidnight > todayAtMidnight;
+                    const isPast = dayAtMidnight < todayAtMidnight;
+                    const isLocked = (isPast && !allowHistoryEditing) || isFuture;
 
                     return (
                         <div 
                             key={day.toString()} 
                             id={isToday ? "today-card" : undefined}
-                            className={`card bg-base-100 shadow-sm border ${isToday ? 'border-primary ring-2 ring-primary ring-opacity-50' : 'border-base-200'} ${isFuture ? 'opacity-50 grayscale' : ''}`}
+                            className={`card bg-base-100 shadow-sm border transition-all duration-300 ${isToday ? 'border-primary ring-2 ring-primary ring-opacity-50' : 'border-base-200'} ${isLocked ? 'opacity-60 grayscale-[50%] bg-base-200/50' : ''}`}
                         >
-                            <div className="card-body p-4">
+                            <div className="card-body p-4 relative overflow-hidden">
+                                {isLocked && isPast && (
+                                    <div className="absolute top-2 right-2 opacity-30">
+                                        🔒
+                                    </div>
+                                )}
                                 <h3 className="font-bold flex justify-between items-center">
                                     {format(day, "MMM dd, EEE")}
                                     {isDefault && <span className="badge badge-warning badge-xs tooltip pointer-events-auto" data-tip="No meals selected = Breakfast + Lunch">Default (65৳)</span>}
                                 </h3>
                                 <div className="flex justify-between mt-2">
                                     {(["breakfast", "lunch", "dinner"] as const).map(type => (
-                                         <label key={type} className={`label cursor-pointer flex-col gap-1 ${isFuture ? 'cursor-not-allowed' : ''}`}>
+                                         <label key={type} className={`label cursor-pointer flex-col gap-1 ${isLocked ? 'cursor-not-allowed' : ''}`}>
                                             <span className="label-text text-xs capitalize">{type}</span>
                                             <input 
                                                 type="checkbox" 
                                                 className={`checkbox checkbox-sm ${isMyProfile ? 'checkbox-primary' : 'checkbox-warning'}`}
                                                 checked={record?.[type] || false}
                                                 onChange={() => handleToggle(day, type)}
-                                                disabled={isFuture}
+                                                disabled={isLocked}
                                             />
                                         </label>
                                     ))}

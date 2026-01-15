@@ -10,12 +10,13 @@ export async function GET(req: NextRequest) {
   const month = searchParams.get("month"); // YYYY-MM
   let start: Date, end: Date;
   if (month) {
-    start = new Date(`${month}-01`);
-    end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+    const [y, m] = month.split("-").map(Number);
+    start = new Date(y, m - 1, 1);
+    end = new Date(y, m, 0, 23, 59, 59, 999);
   } else {
     const now = new Date();
     start = new Date(now.getFullYear(), now.getMonth(), 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
   }
 
   if (userId) {
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { userId, date, breakfast, lunch, dinner, isGuest } = body;
 
-    const normalizedDate = new Date(date);
+    const [year, monthVal, day] = date.split("-").map(Number);
+    const normalizedDate = new Date(year, monthVal - 1, day);
     normalizedDate.setHours(0, 0, 0, 0);
 
     const meal = await Meal.findOneAndUpdate(
@@ -59,7 +61,8 @@ export async function DELETE(req: NextRequest) {
     const body = await req.json();
     const { userId, date } = body;
     
-    const normalizedDate = new Date(date);
+    const [year, monthVal, day] = date.split("-").map(Number);
+    const normalizedDate = new Date(year, monthVal - 1, day);
     normalizedDate.setHours(0, 0, 0, 0);
 
     await Meal.findOneAndDelete({ userId, date: normalizedDate });
