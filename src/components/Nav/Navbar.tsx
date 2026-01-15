@@ -62,7 +62,7 @@ const Navbar = ({ children }: { children: ReactNode }) => {
         {/* Page content here */}
         {children}
       </div>
-      <div className="drawer-side">
+      <div className="drawer-side z-[100]">
         <label
           htmlFor="my-drawer-3"
           aria-label="close sidebar"

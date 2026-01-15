@@ -177,8 +177,8 @@ const Expenses = () => {
             </div>
         </div>
 
-        {/* Controls - Sticky */}
-        <div className="flex flex-col gap-3 sticky top-0 z-30 bg-base-100/95 backdrop-blur py-2 border-b border-base-content/5 md:static md:bg-transparent md:border-0 md:p-0">
+        {/* Controls */}
+        <div className="flex flex-col gap-3 py-2 border-b border-base-content/5 md:static md:bg-transparent md:border-0 md:p-0">
             {/* Search Bar */}
             <div className="w-full relative">
                 <input
@@ -192,7 +192,7 @@ const Expenses = () => {
             </div>
 
             {/* Actions Bar */}
-            <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar md:flex-wrap md:pb-0">
+            <div className="flex flex-wrap gap-2 items-center pb-1">
                 
                 {/* Type Filter Select */}
                 <select 
@@ -224,12 +224,23 @@ const Expenses = () => {
                 </select>
 
                 {/* Date Inputs */}
-                <input
-                    type="date"
-                    className="input input-bordered input-sm w-auto min-w-[130px] rounded-full bg-base-100 shadow-sm text-xs font-bold"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                />
+                <div className="flex items-center gap-1">
+                    <input
+                        type="date"
+                        className="input input-bordered h-9 w-32 rounded-lg bg-base-100 shadow-sm text-xs font-bold px-2"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        placeholder="From"
+                    />
+                    <span className="opacity-30">-</span>
+                    <input
+                        type="date"
+                        className="input input-bordered h-9 w-32 rounded-lg bg-base-100 shadow-sm text-xs font-bold px-2"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                        placeholder="To"
+                    />
+                </div>
 
                 <div className="flex-1"></div>
                 
