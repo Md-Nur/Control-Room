@@ -88,28 +88,31 @@ const RecentActivity = () => {
   };
 
   return (
-    <section className="w-full px-4 py-6">
+    <section className="w-full px-4 py-12 md:py-16">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Recent Activity</h2>
+        <h2 className="text-3xl font-bold mb-8">Recent Activity</h2>
 
         {loading ? (
           <CreativeLoader />
         ) : (
-          <div className="card bg-base-200 shadow-lg">
-            <div className="card-body">
+          <div className="card bg-base-200 shadow-xl border border-base-300">
+            <div className="card-body p-6 md:p-8">
               {recentExpenses && recentExpenses.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {recentExpenses.map((expense) => (
                     <div
                       key={String(expense._id) || Math.random()}
-                      className="flex items-center gap-3 p-3 bg-base-100 rounded-lg hover:shadow-md transition-shadow"
+                      className="group grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4 bg-base-100/50 hover:bg-base-100 rounded-xl border border-transparent hover:border-base-content/10 transition-all duration-200"
                     >
-                      <div className="text-3xl">
+                      {/* Icon */}
+                      <div className="text-3xl p-3 bg-base-200 rounded-lg group-hover:scale-110 transition-transform">
                         {getCategoryIcon(expense.type)}
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{expense.title}</h3>
-                        <p className="text-sm text-base-content/70" suppressHydrationWarning>
+
+                      {/* Details */}
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <h3 className="font-bold text-lg truncate">{expense.title}</h3>
+                        <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider" suppressHydrationWarning>
                           {new Date(expense.date).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -117,50 +120,50 @@ const RecentActivity = () => {
                           })}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <div className="flex flex-col items-end gap-1">
-                          {(expense.dise.find((p) => p.id === polapainAuth._id)?.amount || 0) > 0 && (
-                            <div className="badge badge-success badge-lg font-bold text-white">
-                              +{expense.dise.find((p) => p.id === polapainAuth._id)?.amount.toFixed(2)} ৳
-                            </div>
-                          )}
-                          {(expense.dibo.find((p) => p.id === polapainAuth._id)?.amount || 0) > 0 && (
-                            <div className="badge badge-error badge-lg font-bold text-white">
-                              -{expense.dibo.find((p) => p.id === polapainAuth._id)?.amount.toFixed(2)} ৳
-                            </div>
-                          )}
+
+                      {/* Right Side: Amount & Avatars */}
+                      <div className="flex flex-col items-end gap-2">
+                        {/* Highlights (Who paid/Who pays me) */}
+                        <div className="flex flex-col items-end">
+                             {(expense.dise.find((p) => p.id === polapainAuth._id)?.amount || 0) > 0 && (
+                                <span className="text-success font-black text-lg">
+                                  +{expense.dise.find((p) => p.id === polapainAuth._id)?.amount.toFixed(2)} ৳
+                                </span>
+                              )}
+                              {(expense.dibo.find((p) => p.id === polapainAuth._id)?.amount || 0) > 0 && (
+                                <span className="text-error font-bold block">
+                                  -{expense.dibo.find((p) => p.id === polapainAuth._id)?.amount.toFixed(2)} ৳
+                                </span>
+                              )}
                         </div>
-                        <div className="flex gap-1 mt-1 justify-end">
+
+                        {/* Avatars */}
+                        <div className="flex -space-x-2 overflow-hidden items-center pt-1">
                           {expense.dise
                             .filter((p) => p.amount > 0)
                             .slice(0, 3)
                             .map((person, i) => (
                               <div
                                 key={i}
-                                className="avatar tooltip"
-                                data-tip={person.name}
+                                className="avatar w-6 h-6 border-2 border-base-100 rounded-full"
+                                title={person.name}
                               >
-                                <div className="w-6 rounded-full">
                                   <Image
                                     src={person.avatar || "/avatar.jpg"}
                                     alt={person.name}
                                     width={24}
                                     height={24}
                                   />
-                                </div>
                               </div>
                             ))}
-                          {expense.dise.reduce((a, p) => a + p.amount, 0) ===
-                            0 && (
-                            <div className="avatar tooltip" data-tip="Manager">
-                              <div className="w-6 rounded-full">
+                          {expense.dise.reduce((a, p) => a + p.amount, 0) === 0 && (
+                            <div className="avatar w-6 h-6 border-2 border-base-100 rounded-full" title="Manager Paid">
                                 <Image
                                   src="/logo.jpg"
                                   alt="Manager"
                                   width={24}
                                   height={24}
                                 />
-                              </div>
                             </div>
                           )}
                         </div>

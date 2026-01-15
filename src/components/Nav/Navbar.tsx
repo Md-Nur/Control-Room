@@ -27,7 +27,7 @@ const Navbar = ({ children }: { children: ReactNode }) => {
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         {/* Navbar */}
-        <div className="navbar bg-base-300 w-full">
+        <div className="navbar bg-base-100/80 backdrop-blur-md w-full sticky top-0 z-50 border-b border-base-content/10 shadow-sm">
           <div className="flex-none lg:hidden">
             <label
               htmlFor="my-drawer-3"
@@ -37,9 +37,13 @@ const Navbar = ({ children }: { children: ReactNode }) => {
               <MdMenu className="w-7 h-7" />
             </label>
           </div>
-          <div className="mx-2 flex-1 px-2 items-center gap-4">
-            <Image src={Logo} alt="Logo" className="w-12 h-12 rounded" />
-            <h1 className="text-xl font-bold hidden sm:block">
+          <div className="mx-2 flex-1 px-2 items-center gap-3">
+            <div className="avatar">
+               <div className="w-10 h-10 rounded-xl ring ring-primary ring-offset-base-100 ring-offset-1">
+                  <Image src={Logo} alt="Logo" />
+               </div>
+            </div>
+            <h1 className="text-xl font-black tracking-tight hidden sm:block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 {getTitle(pathname)}
             </h1>
           </div>

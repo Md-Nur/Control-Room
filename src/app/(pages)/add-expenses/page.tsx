@@ -30,7 +30,7 @@ const AddExpenses = () => {
   const { handleSubmit, register, watch, setValue, reset, getValues } = useForm<FormData>({
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
-      type: "food",
+      type: "",
       dibo: [],
       dise: []
     }
@@ -190,8 +190,13 @@ const AddExpenses = () => {
         }
         return true;
       case 2: // Basic Info
+        const type = watch("type");
         if (!title || !amount || amount <= 0) {
           toast.error("Please fill in title and amount");
+          return false;
+        }
+        if (!type) {
+          toast.error("Please select a category");
           return false;
         }
         return true;
@@ -272,9 +277,9 @@ const AddExpenses = () => {
   const stepLabels = ["Select Members", "Basic Info", "Who Pays", "Who Paid", "Review"];
 
   return (
-    <section className="w-full min-h-screen py-10 px-4 pb-24 md:pb-10">
+    <section className="w-full min-h-screen py-16 px-4 pb-32 md:pb-20">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">Add Expense</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">Add Expense</h1>
 
         <StepIndicator
           currentStep={currentStep}
@@ -282,7 +287,7 @@ const AddExpenses = () => {
           stepLabels={stepLabels}
         />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Step 1: Member Selection */}
           <div
             id="step-card-1"
@@ -407,10 +412,11 @@ const AddExpenses = () => {
                   </label>
                   <select
                     className="select select-bordered w-full"
-                    {...register("type")}
-                    defaultValue="food"
+                    {...register("type", { required: "Please select a type" })}
+                    defaultValue=""
                     disabled={currentStep !== 2}
                   >
+                    <option value="" disabled>Select Category</option>
                     <option value="food">🍔 Food</option>
                     <option value="grocery">🛒 Grocery</option>
                     <option value="transportation">🚌 Transportation</option>
@@ -524,7 +530,7 @@ const AddExpenses = () => {
                 <div className="alert alert-info mt-4">
                   <div className="flex justify-between w-full">
                     <span>Total who pays:</span>
-                    <span className={`font-bold ${Math.abs(diboTotal - Number(watchedAmount)) > 1 ? 'text-error' : 'text-success'}`}>
+                    <span className={`text-xl md:text-2xl font-black ${Math.abs(diboTotal - Number(watchedAmount)) > 1 ? 'text-error animate-pulse' : 'text-success'}`}>
                       {diboTotal.toFixed(2)} ৳ / {watchedAmount || 0} ৳
                     </span>
                   </div>

@@ -11,6 +11,10 @@ const NavRoute = ({ name, route }: { name: string; route?: string }) => {
     if (inputNav) {
       (inputNav as HTMLInputElement).checked = false;
     }
+    const details = document.querySelectorAll("details[open]");
+    details.forEach((detail) => {
+      detail.removeAttribute("open");
+    });
   };
 
   return (

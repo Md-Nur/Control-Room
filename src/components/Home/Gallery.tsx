@@ -1,11 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Image from "next/image";
 import toast from "react-hot-toast";
 // @ts-expect-error - no types for react-responsive-masonry
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import CreativeLoader from "@/components/CreativeLoader";
+import AddPhotoModal from "./AddPhotoModal";
 
 interface Photo {
   _id: string;
@@ -16,43 +18,53 @@ interface Photo {
 }
 
 const Gallery = () => {
+  const { polapainAuth } = usePolapainAuth();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchPhotos = async () => {
+  // Memoize fetchPhotos to use in useEffect and callbacks
+  const fetchPhotos = useCallback(async () => {
       try {
         const res = await axios.get("/api/img");
         setPhotos(res.data);
       } catch (_error: unknown) {
-        const error = _error as { response?: { data?: { error?: string } } };
-        toast.error(error?.response?.data?.error || "Failed to load photos");
+        toast.error("Failed to load photos");
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchPhotos();
   }, []);
+
+  useEffect(() => {
+    fetchPhotos();
+  }, [fetchPhotos]);
 
   const openLightbox = (photo: Photo) => {
     setSelectedPhoto(photo);
-    document.body.style.overflow = "hidden"; // Prevent scrolling
+    // document.body.style.overflow = "hidden"; // Optional: keep scrolling enabled or disabled
   };
 
   const closeLightbox = () => {
     setSelectedPhoto(null);
-    document.body.style.overflow = "auto"; // Restore scrolling
+    // document.body.style.overflow = "auto";
   };
 
   return (
-    <section className="w-full px-4 py-8 pb-24 md:pb-8">
+    <section className="w-full px-4 py-12 md:py-20 pb-24 md:pb-20">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-12">
           <h1 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
             📸 Gallery
           </h1>
+          {polapainAuth && (
+            <button 
+                onClick={() => setIsUploadOpen(true)}
+                className="btn btn-primary btn-sm md:btn-md shadow-lg hover:scale-105 transition-transform"
+            >
+               ➕ Add Memory
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -97,6 +109,14 @@ const Gallery = () => {
           </div>
         )}
       </div>
+
+      {/* Upload Modal */}
+      {isUploadOpen && (
+        <AddPhotoModal 
+            onClose={() => setIsUploadOpen(false)} 
+            onSuccess={fetchPhotos}
+        />
+      )}
 
       {/* Lightbox Modal */}
       {selectedPhoto && (

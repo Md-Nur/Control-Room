@@ -16,6 +16,6 @@ export default {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["retro", "wireframe", "night"],
+    themes: ["business"],
   },
 } satisfies Config;

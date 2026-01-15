@@ -202,7 +202,9 @@ const Expenses = () => {
                 >
                     <option value="all">Filer: All Types</option>
                     {CATEGORIES.map(cat => (
-                        <option key={cat} value={cat} className="capitalize">{cat}</option>
+                        <option key={cat} value={cat} className="capitalize">
+                            {cat.replace(/_/g, " ")}
+                        </option>
                     ))}
                 </select>
 
@@ -215,7 +217,9 @@ const Expenses = () => {
                   value={sort}
                 >
                   <option value="">Sort: Default</option>
-                  <option value="date">📅 Date</option>
+                  <option value="date">📅 Date (Newest)</option>
+                  <option value="amount_desc">💰 Amount (High)</option>
+                  <option value="amount_asc">💰 Amount (Low)</option>
                   <option value="_id">🆕 Added</option>
                 </select>
 

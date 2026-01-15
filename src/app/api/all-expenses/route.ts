@@ -29,13 +29,10 @@ export async function GET(req: NextRequest) {
     query.title = { $regex: search, $options: "i" };
   }
 
-  // Type filter
+  // Type filter logic
   if (type !== "all") {
     query.type = type;
-  }
-  
-  // Exclude Type filter
-  if (excludeType) {
+  } else if (excludeType) {
     query.type = { $ne: excludeType };
   }
   
@@ -60,6 +57,10 @@ export async function GET(req: NextRequest) {
     sort = { date: -1 };
   } else if (sortParam === "_id") {
     sort = { _id: -1 };
+  } else if (sortParam === "amount_desc") {
+    sort = { amount: -1 };
+  } else if (sortParam === "amount_asc") {
+    sort = { amount: 1 };
   }
 
   try {
