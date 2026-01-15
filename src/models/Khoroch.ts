@@ -14,8 +14,8 @@ const khorochSchema = new Schema<Khoroch>({
   amount: { type: Number, required: true },
   title: { type: String, required: true },
   date: { type: Date, required: true },
-  dise: [{ id: String, amount: Number, name: String, avatar: String }],
-  dibo: [{ id: String, amount: Number, name: String, avatar: String }],
+  dise: [{ id: String, amount: Number, name: { type: String, required: false }, avatar: { type: String, required: false } }],
+  dibo: [{ id: String, amount: Number, name: { type: String, required: false }, avatar: { type: String, required: false } }],
   type: { 
     type: String, 
     required: true, 

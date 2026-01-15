@@ -247,8 +247,14 @@ const AddExpenses = () => {
     toast.loading("Submitting...");
     setShowConfirm(false);
     
+    const payload = {
+        ...formPreview,
+        dise: formPreview.dise.map(d => ({ id: d.id, amount: d.amount })),
+        dibo: formPreview.dibo.map(d => ({ id: d.id, amount: d.amount }))
+    };
+    
     axios
-      .post("/api/all-expenses", formPreview)
+      .post("/api/all-expenses", payload)
       .then(() => {
         toast.dismiss();
         toast.success("Expense added successfully!");

@@ -65,8 +65,32 @@ export async function GET(req: NextRequest) {
   try {
     const skipStats = url.searchParams.get("skipStats") === "true";
 
+    // Helper to populate user details manually
+    const populateDetails = async (expenses: any[]) => {
+       const userIds = new Set<string>();
+       expenses.forEach(e => {
+           e.dise.forEach((p: any) => userIds.add(p.id));
+           e.dibo.forEach((p: any) => userIds.add(p.id));
+       });
+       
+       const users = await PolapainModel.find({ _id: { $in: Array.from(userIds) } }).lean();
+       const userMap = new Map(users.map(u => [String(u._id), u]));
+
+       return expenses.map(e => ({
+           ...e,
+           dise: e.dise.map((p: any) => {
+               const u = userMap.get(p.id);
+               return { ...p, name: u?.name, avatar: u?.avatar };
+           }),
+           dibo: e.dibo.map((p: any) => {
+               const u = userMap.get(p.id);
+               return { ...p, name: u?.name, avatar: u?.avatar };
+           })
+       }));
+    };
+
     if (skipStats) {
-        const [expenses, total] = await Promise.all([
+        let [expensesRaw, total] = await Promise.all([
             KhorochModel.find(query)
                 .sort(sort as any)
                 .skip((page - 1) * limit)
@@ -74,6 +98,8 @@ export async function GET(req: NextRequest) {
                 .lean(),
             KhorochModel.countDocuments(query)
         ]);
+
+        const expenses = await populateDetails(expensesRaw);
 
         return Response.json({
             expenses,
@@ -94,12 +120,84 @@ export async function GET(req: NextRequest) {
     // Sorting stage
     pipeline.push({ $sort: sort as any });
 
-
+    // Lookup Stage to be reused
+    const lookupStages = [
+        {
+            $addFields: {
+                dise_ids: { $map: { input: "$dise", as: "d", in: { $toObjectId: "$$d.id" } } },
+                dibo_ids: { $map: { input: "$dibo", as: "d", in: { $toObjectId: "$$d.id" } } }
+            }
+        },
+        {
+            $lookup: {
+                from: "polapains",
+                localField: "dise_ids",
+                foreignField: "_id",
+                as: "dise_users"
+            }
+        },
+        {
+             $lookup: {
+                from: "polapains",
+                localField: "dibo_ids",
+                foreignField: "_id",
+                as: "dibo_users"
+            }
+        },
+        {
+            $addFields: {
+                dise: {
+                    $map: {
+                        input: "$dise",
+                        as: "d",
+                        in: {
+                            id: "$$d.id",
+                            amount: "$$d.amount",
+                            userInfo: { 
+                                $arrayElemAt: [ 
+                                    { $filter: { input: "$dise_users", as: "u", cond: { $eq: [{ $toString: "$$u._id" }, "$$d.id"] } } }, 
+                                    0 
+                                ] 
+                            }
+                        }
+                    }
+                },
+                dibo: {
+                    $map: {
+                        input: "$dibo",
+                        as: "d",
+                        in: {
+                            id: "$$d.id",
+                            amount: "$$d.amount",
+                            userInfo: { 
+                                $arrayElemAt: [ 
+                                    { $filter: { input: "$dibo_users", as: "u", cond: { $eq: [{ $toString: "$$u._id" }, "$$d.id"] } } }, 
+                                    0 
+                                ] 
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                amount: 1, title: 1, date: 1, type: 1, isApproved: 1,
+                dise: {
+                    $map: { input: "$dise", as: "d", in: { id: "$$d.id", amount: "$$d.amount", name: "$$d.userInfo.name", avatar: "$$d.userInfo.avatar" } }
+                },
+                dibo: {
+                    $map: { input: "$dibo", as: "d", in: { id: "$$d.id", amount: "$$d.amount", name: "$$d.userInfo.name", avatar: "$$d.userInfo.avatar" } }
+                }
+            }
+        }
+    ];
 
     const facetStage: any = {
       expenses: [
         { $skip: (page - 1) * limit },
         { $limit: limit },
+        ...lookupStages
       ],
       totalCount: [
         { $count: "count" },
