@@ -56,7 +56,14 @@ const MealManager = () => {
       const res = await axios.get(
         `/api/meals?userId=${selecteduserId}&month=${format(currentMonth, "yyyy-MM")}`
       );
-      setMeals(res.data);
+      
+      // Deduplicate right at the source
+      const dailyMap = new Map<string, MealRecord>();
+      res.data.forEach((m: MealRecord) => {
+          const dateKey = m.date.toString().split('T')[0];
+          dailyMap.set(dateKey, m);
+      });
+      setMeals(Array.from(dailyMap.values()));
     } catch {
       toast.error("Failed to load meals");
     } finally {
@@ -72,21 +79,24 @@ const MealManager = () => {
         
         // Group by User
         const stats = polapains.map(user => {
-            const userMeals = allMeals.filter((m: MealRecord & {userId: string}) => m.userId === user._id);
+            const userMealsRaw = allMeals.filter((m: MealRecord & {userId: string}) => m.userId.toString() === user._id.toString());
+            
+            // Deduplicate by Date to ensure synchronization with Calendar view
+            const dailyMap = new Map<string, MealRecord>();
+            userMealsRaw.forEach((m: MealRecord) => {
+                const dateKey = m.date.toString().split('T')[0];
+                dailyMap.set(dateKey, m);
+            });
+            const userMeals = Array.from(dailyMap.values());
+
             const cost = calculateMonthlyMealCost(userMeals);
             
             // Calculate counts
             let b = 0, l = 0, d = 0;
             userMeals.forEach((m: MealRecord) => {
-                 // Check if it's a default day (counts as B+D) or specific
-                 const isDefault = !m.breakfast && !m.lunch && !m.dinner;
-                 if (isDefault) {
-                     b++; d++;
-                 } else {
-                     if (m.breakfast) b++;
-                     if (m.lunch) l++;
-                     if (m.dinner) d++;
-                 }
+                 if (m.breakfast) b++;
+                 if (m.lunch) l++;
+                 if (m.dinner) d++;
             });
 
             return {
@@ -181,6 +191,11 @@ const MealManager = () => {
             toast.error("Failed to update");
             setMeals(previousMeals);
         }
+    }
+
+    // Refresh summary if we are in summary mode or just for safety
+    if (polapainAuth?.isManager) {
+        fetchSummary();
     }
   };
 
@@ -332,7 +347,6 @@ const MealManager = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {daysInMonth.map((day) => {
                     const record = meals.find(m => isSameDay(new Date(m.date), day));
-                    const isDefault = record && !record.breakfast && !record.lunch && !record.dinner;
                     const isToday = isSameDay(day, new Date());
                     
                     const todayAtMidnight = new Date();
@@ -358,7 +372,7 @@ const MealManager = () => {
                                 )}
                                 <h3 className="font-bold flex justify-between items-center">
                                     {format(day, "MMM dd, EEE")}
-                                    {isDefault && <span className="badge badge-warning badge-xs tooltip pointer-events-auto" data-tip="No meals selected = Breakfast + Lunch">Default (65৳)</span>}
+                                    {/* No Default Badge */}
                                 </h3>
                                 <div className="flex justify-between mt-2">
                                     {(["breakfast", "lunch", "dinner"] as const).map(type => (
