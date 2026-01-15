@@ -1,28 +1,23 @@
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import NavLinks from "./Nav/NavLinks";
 
 const Footer = () => {
   return (
-    <footer className="footer footer-center bg-base-200/50 text-base-content p-10 mt-auto border-t border-base-content/5">
-      <nav className="flex flex-wrap justify-center gap-6">
-        <NavLinks />
-      </nav>
-      <nav>
-        <div className="grid grid-flow-col gap-6">
-          <a className="hover:text-primary transition-colors cursor-pointer">
-            <FaFacebook className="w-6 h-6" />
-          </a>
-          <a className="hover:text-primary transition-colors cursor-pointer">
-            <FaInstagram className="w-6 h-6" />
-          </a>
-          <a className="hover:text-primary transition-colors cursor-pointer">
-            <FaLinkedin className="w-6 h-6" />
-          </a>
-        </div>
-      </nav>
+    <footer className="footer footer-center bg-base-100/50 text-base-content p-6 mt-12 border-t border-base-content/5">
       <aside>
-        <p className="opacity-60 text-sm">
-          Copyright © {new Date().getFullYear()} - Control Room
+        <div className="flex gap-4 mb-2 opacity-50 hover:opacity-100 transition-opacity">
+           <a className="cursor-pointer hover:text-primary"><FaFacebook size={18} /></a>
+           <a className="cursor-pointer hover:text-primary"><FaInstagram size={18} /></a>
+           <a className="cursor-pointer hover:text-primary"><FaLinkedin size={18} /></a>
+        </div>
+        
+        <p className="font-bold text-lg opacity-80">
+          CONTROL ROOM <span className="text-primary text-xs align-top">v2</span>
+        </p>
+        <p className="text-xs opacity-60 italic">
+          &quot;Managing your financial chaos, one taka at a time.&quot;
+        </p>
+        <p className="text-[10px] opacity-40 mt-2">
+          © {new Date().getFullYear()} - Built by accidental accountants.
         </p>
       </aside>
     </footer>

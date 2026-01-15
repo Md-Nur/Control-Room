@@ -14,6 +14,11 @@ const ProfilePage = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
+  // Name Edit State
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [nameLoading, setNameLoading] = useState(false);
+
   useEffect(() => {
     if (polapainAuth?.avatar) {
       setPreview(polapainAuth.avatar);
@@ -137,6 +142,28 @@ const ProfilePage = () => {
     }
   };
 
+  const handleNameUpdate = async () => {
+    if (!newName.trim()) return toast.error("Name cannot be empty");
+    
+    setNameLoading(true);
+    try {
+        await axios.put("/api/profile", {
+            userId: polapainAuth?._id,
+            name: newName
+        });
+
+        if (polapainAuth) {
+            setPolapainAuth({ ...polapainAuth, name: newName });
+        }
+        setIsEditingName(false);
+        toast.success("Name updated successfully!");
+    } catch {
+        toast.error("Failed to update name");
+    } finally {
+        setNameLoading(false);
+    }
+  };
+
   if (!polapainAuth) return <CreativeLoader />;
 
   return (
@@ -156,7 +183,44 @@ const ProfilePage = () => {
                   </div>
               </div>
 
-              <h3 className="text-lg font-semibold">{polapainAuth.name}</h3>
+              {/* Name Edit Section */}
+              {isEditingName ? (
+                  <div className="flex gap-2 mb-2 w-full max-w-xs">
+                      <input 
+                          type="text" 
+                          className="input input-bordered input-sm w-full font-bold text-center"
+                          value={newName}
+                          onChange={(e) => setNewName(e.target.value)}
+                          placeholder="Enter your name"
+                      />
+                      <button 
+                          className="btn btn-sm btn-success btn-square"
+                          onClick={() => handleNameUpdate()}
+                          disabled={nameLoading}
+                      >
+                          {nameLoading ? <span className="loading loading-spinner loading-xs"></span> : "✓"}
+                      </button>
+                      <button 
+                          className="btn btn-sm btn-error btn-square"
+                          onClick={() => setIsEditingName(false)}
+                      >
+                          ✕
+                      </button>
+                  </div>
+              ) : (
+                  <div className="flex items-center gap-2 mb-2 group">
+                      <h3 className="text-lg font-semibold">{polapainAuth.name}</h3>
+                      <button 
+                          onClick={() => {
+                              setIsEditingName(true);
+                              setNewName(polapainAuth.name);
+                          }}
+                          className="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                          ✏️
+                      </button>
+                  </div>
+              )}
               <p className="text-sm text-base-content/70 mb-6">{polapainAuth.phone || "No phone number"}</p>
 
               <input 

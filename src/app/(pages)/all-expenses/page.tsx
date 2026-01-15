@@ -226,7 +226,7 @@ const Expenses = () => {
                 {/* Date Inputs */}
                 <input
                     type="date"
-                    className="input input-bordered input-sm w-32 rounded-full bg-base-200/50 text-xs"
+                    className="input input-bordered input-sm w-auto min-w-[130px] rounded-full bg-base-100 shadow-sm text-xs font-bold"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
                 />
@@ -253,7 +253,7 @@ const Expenses = () => {
           ) : (
             <>
               {/* Desktop Table */}
-              <div className="hidden md:block overflow-x-auto rounded-xl border border-base-content/10 bg-base-100 shadow-sm">
+              <div className="hidden md:block overflow-x-auto rounded-xl border border-base-content/10 bg-base-100 shadow-sm pb-24">
                 <table className="table table-sm">
                   <thead className="bg-base-200/50">
                     <tr>
@@ -279,14 +279,14 @@ const Expenses = () => {
                         <td>
                             <div className="flex -space-x-2">
                                 {expense.dise.map(p => p.amount > 0 && (
-                                    <div key={p.id} className="avatar tooltip" data-tip={`${p.name}: ${p.amount}`}>
+                                    <div key={p.id} className="avatar tooltip tooltip-bottom z-10 hover:z-20" data-tip={`${p.name}: ${p.amount}`} title={`${p.name}: ${p.amount}`}>
                                         <div className="w-6 rounded-full ring ring-base-100 ring-offset-1">
                                             <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={24} height={24} />
                                         </div>
                                     </div>
                                 ))}
                                 {expense.dise.every(p => p.amount === 0) && (
-                                    <div className="avatar tooltip" data-tip={`Manager: ${expense.amount}`}>
+                                    <div className="avatar tooltip tooltip-bottom" data-tip={`Manager: ${expense.amount}`} title={`Manager: ${expense.amount}`}>
                                         <div className="w-6 rounded-full ring ring-base-100 ring-offset-1">
                                             <Image src="/logo.jpg" alt="Manager" width={24} height={24} />
                                         </div>
@@ -297,7 +297,7 @@ const Expenses = () => {
                         <td>
                              <div className="flex -space-x-2">
                                 {expense.dibo.map(p => p.amount > 0 && (
-                                    <div key={p.id} className="avatar tooltip" data-tip={`${p.name}: ${p.amount}`}>
+                                    <div key={p.id} className="avatar tooltip tooltip-bottom z-10 hover:z-20" data-tip={`${p.name}: ${p.amount}`} title={`${p.name}: ${p.amount}`}>
                                         <div className="w-6 rounded-full ring ring-base-100 ring-offset-1 grayscale opacity-80">
                                             <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={24} height={24} />
                                         </div>
@@ -319,11 +319,11 @@ const Expenses = () => {
                 {paginatedExpenses.map((expense) => (
                     <div key={expense._id.toString()} className="card bg-base-100 shadow-sm border border-base-content/10 compact p-0">
                         <div className="card-body flex-row justify-between items-center p-3">
-                            <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="flex items-center gap-3">
                                 <div className="text-2xl bg-base-200/50 p-2 rounded-lg">
                                     {getCategoryIcon(expense.type)}
                                 </div>
-                                <div className="min-w-0">
+                                <div className="min-w-0 flex-1">
                                     <h3 className="font-bold truncate text-sm">{expense.title}</h3>
                                     <div className="flex flex-col gap-1 mt-1">
                                          {/* Paid By Row */}
@@ -353,7 +353,7 @@ const Expenses = () => {
                                          {/* Improved Split Preview in Mobile Card */}
                                          <div className="flex -space-x-1">
                                             {expense.dibo.slice(0, 3).map(p => p.amount > 0 && (
-                                                <div key={p.id} className="avatar w-4 h-4">
+                                                <div key={p.id} className="avatar w-4 h-4 tooltip tooltip-bottom" data-tip={`${p.name}: ${p.amount}`} title={`${p.name}: ${p.amount}`}>
                                                     <div className="rounded-full grayscale ring ring-base-100 ring-offset-0">
                                                         <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={16} height={16} />
                                                     </div>

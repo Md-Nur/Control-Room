@@ -7,15 +7,19 @@ export async function PUT(req: NextRequest) {
   await dbConnect();
   try {
     const body = await req.json();
-    const { userId, avatar } = body;
+    const { userId, avatar, name } = body;
 
-    if (!userId || !avatar) {
-        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (!userId) {
+        return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
     }
+
+    const updateData: { avatar?: string; name?: string } = {};
+    if (avatar) updateData.avatar = avatar;
+    if (name) updateData.name = name;
 
     const updatedUser = await PolapainModel.findByIdAndUpdate(
       userId,
-      { avatar },
+      updateData,
       { new: true }
     );
 
