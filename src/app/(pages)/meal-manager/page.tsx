@@ -57,13 +57,8 @@ const MealManager = () => {
         `/api/meals?userId=${selecteduserId}&month=${format(currentMonth, "yyyy-MM")}`
       );
       
-      // Deduplicate right at the source
-      const dailyMap = new Map<string, MealRecord>();
-      res.data.forEach((m: MealRecord) => {
-          const dateKey = m.date.toString().split('T')[0];
-          dailyMap.set(dateKey, m);
-      });
-      setMeals(Array.from(dailyMap.values()));
+      // The API now returns UTC dates, we store them as-is but we'll use string comparison
+      setMeals(res.data);
     } catch {
       toast.error("Failed to load meals");
     } finally {
@@ -71,24 +66,16 @@ const MealManager = () => {
     }
   }, [selecteduserId, currentMonth]);
 
-  const fetchSummary = useCallback(async () => {
-    setLoading(true);
+  const fetchSummary = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
         const res = await axios.get(`/api/meals?month=${format(currentMonth, "yyyy-MM")}`);
         const allMeals = res.data;
         
         // Group by User
         const stats = polapains.map(user => {
-            const userMealsRaw = allMeals.filter((m: MealRecord & {userId: string}) => m.userId.toString() === user._id.toString());
+            const userMeals = allMeals.filter((m: any) => m.userId.toString() === user._id.toString());
             
-            // Deduplicate by Date to ensure synchronization with Calendar view
-            const dailyMap = new Map<string, MealRecord>();
-            userMealsRaw.forEach((m: MealRecord) => {
-                const dateKey = m.date.toString().split('T')[0];
-                dailyMap.set(dateKey, m);
-            });
-            const userMeals = Array.from(dailyMap.values());
-
             const cost = calculateMonthlyMealCost(userMeals);
             
             // Calculate counts
@@ -112,7 +99,7 @@ const MealManager = () => {
     } catch {
         toast.error("Failed to fetch summary");
     } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
     }
   }, [currentMonth, polapains]);
 
@@ -143,59 +130,59 @@ const MealManager = () => {
   }, [selecteduserId, currentMonth, viewMode, fetchUserMeals, fetchSummary]);
 
   const handleToggle = async (date: Date, type: "breakfast" | "lunch" | "dinner") => {
+    const dateStr = format(date, "yyyy-MM-dd");
     const previousMeals = [...meals];
-    const existingRecord = meals.find((m) => isSameDay(new Date(m.date), date));
+    
+    // Find existing record using string comparison
+    const existingRecord = meals.find((m) => {
+        const mDate = new Date(m.date).toISOString().split('T')[0];
+        return mDate === dateStr;
+    });
     
     // Default new record structure
     const newRecord = existingRecord
       ? { ...existingRecord }
-      : { date: format(date, "yyyy-MM-dd"), breakfast: false, lunch: false, dinner: false };
+      : { date: dateStr, breakfast: false, lunch: false, dinner: false };
 
     newRecord[type] = !newRecord[type];
     
     // Check if all are false now
     const isEmpty = !newRecord.breakfast && !newRecord.lunch && !newRecord.dinner;
 
+    // Optimistic Update
     if (isEmpty) {
-        // Remove from UI
-        setMeals(meals.filter(m => !isSameDay(new Date(m.date), date)));
-        
-        // Delete from API
-        try {
-            await axios.delete("/api/meals", {
-                data: {
-                    userId: selecteduserId,
-                    date: format(date, "yyyy-MM-dd")
-                }
-            });
-        } catch {
-            toast.error("Failed to delete");
-            setMeals(previousMeals);
-        }
+        setMeals(meals.filter(m => new Date(m.date).toISOString().split('T')[0] !== dateStr));
     } else {
-        // Update UI
         if (existingRecord) {
-            setMeals(meals.map(m => isSameDay(new Date(m.date), date) ? newRecord : m));
+            setMeals(meals.map(m => new Date(m.date).toISOString().split('T')[0] === dateStr ? newRecord : m));
         } else {
             setMeals([...meals, newRecord]);
         }
+    }
 
-        // Save to API
-        try {
+    try {
+        if (isEmpty) {
+            await axios.delete("/api/meals", {
+                data: {
+                    userId: selecteduserId,
+                    date: dateStr
+                }
+            });
+        } else {
             await axios.post("/api/meals", {
                 userId: selecteduserId,
                 ...newRecord,
-                date: format(date, "yyyy-MM-dd")
+                date: dateStr
             });
-        } catch {
-            toast.error("Failed to update");
-            setMeals(previousMeals);
         }
-    }
-
-    // Refresh summary if we are in summary mode or just for safety
-    if (polapainAuth?.isManager) {
-        fetchSummary();
+        
+        // Refresh summary silently
+        if (polapainAuth?.isManager) {
+            fetchSummary(true);
+        }
+    } catch {
+        toast.error("Failed to update");
+        setMeals(previousMeals);
     }
   };
 
@@ -346,7 +333,11 @@ const MealManager = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {daysInMonth.map((day) => {
-                    const record = meals.find(m => isSameDay(new Date(m.date), day));
+                    const dayStr = format(day, "yyyy-MM-dd");
+                    const record = meals.find(m => {
+                        const mDate = new Date(m.date).toISOString().split('T')[0];
+                        return mDate === dayStr;
+                    });
                     const isToday = isSameDay(day, new Date());
                     
                     const todayAtMidnight = new Date();
