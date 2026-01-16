@@ -111,14 +111,14 @@ const Manager = () => {
         <div className="flex gap-3 mb-6 flex-wrap justify-center">
           <button
             type="button"
-            className="btn btn-sm btn-outline"
+            className="btn btn-sm btn-outline rounded-2xl"
             onClick={handleAddSameToAll}
           >
             Same for All
           </button>
           <button
             type="button"
-            className="btn btn-sm btn-outline"
+            className="btn btn-sm btn-outline rounded-2xl"
             onClick={handleResetAll}
           >
             Reset
@@ -126,7 +126,7 @@ const Manager = () => {
         </div>
 
         {/* Compact Stats Bar */}
-        <div className="bg-base-200 rounded-lg p-4 mb-6 shadow">
+        <div className="bg-base-200 rounded-2xl p-4 mb-6 shadow-lg border border-base-content/5">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-xs text-base-content/70">Current Pool</div>
@@ -147,21 +147,21 @@ const Manager = () => {
           </div>
         </div>
 
-        <div className="card bg-base-200 shadow-xl">
+        <div className="card bg-base-200/50 shadow-xl border border-base-content/5 rounded-2xl">
           <div className="card-body">
             <div className="flex justify-between items-center mb-6">
               <h2 className="card-title text-2xl">Add Balance</h2>
               <div className="flex gap-2">
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-outline rounded-2xl"
                   onClick={handleAddSameToAll}
                 >
                   Same for All
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-outline rounded-2xl"
                   onClick={handleResetAll}
                 >
                   Reset
@@ -175,7 +175,7 @@ const Manager = () => {
                   {polapains?.map((polapain, i) => (
                     <div
                       key={i}
-                      className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow"
+                      className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow border border-base-content/5 rounded-2xl"
                     >
                       <div className="card-body p-4">
                         <div className="flex items-center gap-3 mb-3">
@@ -222,7 +222,7 @@ const Manager = () => {
                           <input
                             type="number"
                             placeholder="0.00"
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full rounded-2xl"
                             {...register(`addTaka.${i}.amount`)}
                             defaultValue={0}
                             step={0.01}
@@ -231,7 +231,7 @@ const Manager = () => {
 
                         {watchedAmounts?.[i]?.amount !== undefined &&
                           Number(watchedAmounts[i].amount) !== 0 && (
-                            <div className="alert alert-success mt-2 py-2">
+                            <div className="alert alert-success mt-2 py-2 rounded-2xl">
                               <div className="text-sm">
                                 <span className="font-semibold">New: </span>
                                 {getNewBalance(
@@ -253,7 +253,7 @@ const Manager = () => {
               <div className="card-actions justify-center mt-6">
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-primary btn-lg rounded-2xl"
                   disabled={loading}
                 >
                   💰 Add Balance
@@ -263,7 +263,7 @@ const Manager = () => {
           </div>
         </div>
 
-        <div className="alert alert-info mt-6">
+        <div className="alert alert-info mt-6 rounded-2xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

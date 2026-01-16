@@ -1,6 +1,7 @@
 
 import dbConnect from "@/lib/dbConnect";
 import Notification from "@/models/Notification";
+import Polapain from "@/models/Polapain"; // Ensure model is registered
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -16,11 +17,12 @@ export async function GET(req: NextRequest) {
     const notifications = await Notification.find({ recipient: userId })
       .sort({ createdAt: -1 })
       .limit(20)
-      .populate("sender", "name avatar"); // Populate sender name/avatar for UI
+      .populate("sender", "name avatar");
     
     return NextResponse.json(notifications);
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
+  } catch (error: any) {
+    console.error("GET /api/notifications error:", error);
+    return NextResponse.json({ error: "Failed to fetch notifications", details: error.message }, { status: 500 });
   }
 }
 

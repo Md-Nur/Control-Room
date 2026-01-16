@@ -104,7 +104,7 @@ const Balance = () => {
         </h1>
 
         {/* Compact Summary Bar */}
-        <div className="bg-base-200 rounded-lg p-4 mb-6 shadow">
+        <div className="bg-base-200 rounded-2xl p-4 mb-6 shadow-lg border border-base-content/5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
               <div className="text-xs text-base-content/70">Pool</div>
@@ -130,19 +130,19 @@ const Balance = () => {
         {/* Filter Buttons */}
         <div className="flex justify-center gap-2 mb-6">
           <button
-            className={`btn btn-sm ${filter === "all" ? "btn-primary" : "btn-outline"}`}
+            className={`btn btn-sm rounded-2xl ${filter === "all" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setFilter("all")}
           >
             All ({polapain.length})
           </button>
           <button
-            className={`btn btn-sm ${filter === "positive" ? "btn-success" : "btn-outline"}`}
+            className={`btn btn-sm rounded-2xl ${filter === "positive" ? "btn-success" : "btn-outline"}`}
             onClick={() => setFilter("positive")}
           >
             In Credit ({positiveBalances.length})
           </button>
           <button
-            className={`btn btn-sm ${filter === "negative" ? "btn-error" : "btn-outline"}`}
+            className={`btn btn-sm rounded-2xl ${filter === "negative" ? "btn-error" : "btn-outline"}`}
             onClick={() => setFilter("negative")}
           >
             In Debt ({negativeBalances.length})
@@ -156,7 +156,7 @@ const Balance = () => {
               filteredPolapain.map((pola, i) => (
                 <div
                   key={i}
-                  className="card bg-base-200 shadow-lg hover:shadow-xl transition-shadow"
+                  className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow border border-base-content/5 rounded-2xl"
                 >
                   <div className="card-body">
                     <div className="flex items-center gap-3 mb-3">
@@ -202,14 +202,14 @@ const Balance = () => {
 
         {/* Settlement Suggestions */}
         {!loading && negativeBalances.length > 0 && (
-          <div className="card bg-base-200 shadow-xl">
+          <div className="card bg-base-200/50 shadow-xl border border-base-content/5 rounded-2xl">
             <div className="card-body">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="card-title text-2xl">
                   💡 Settlement Suggestions
                 </h2>
                 <button
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-outline rounded-2xl"
                   onClick={copySettlementInstructions}
                 >
                   📋 Copy Instructions
@@ -222,7 +222,7 @@ const Balance = () => {
                 {getSettlementSuggestions().map((suggestion, i) => (
                   <div
                     key={i}
-                    className="alert alert-info flex flex-col sm:flex-row justify-between items-center gap-2 p-3 sm:p-4 text-center sm:text-left"
+                    className="alert alert-info flex flex-col sm:flex-row justify-between items-center gap-2 p-3 sm:p-4 text-center sm:text-left rounded-2xl"
                   >
                     <span className="text-sm sm:text-base">
                       <strong>{suggestion.from}</strong> should pay{" "}
@@ -239,7 +239,7 @@ const Balance = () => {
         )}
 
         {/* Manager Total */}
-        <div className="card bg-gradient-to-r from-primary to-secondary text-primary-content shadow-lg mt-6 compact">
+        <div className="card bg-gradient-to-r from-primary to-secondary text-primary-content shadow-lg mt-6 compact rounded-2xl">
           <div className="card-body flex-row items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="avatar">

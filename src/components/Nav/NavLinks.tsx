@@ -59,7 +59,17 @@ const NavLinks = () => {
              </details>
           </li>
 
-          <NavRoute name="meals" route="/meal-manager" />
+          {/* Meals Dropdown */}
+          <li className="list-none">
+             <details>
+               <summary className="uppercase">Meals</summary>
+               <ul className="p-2 bg-base-100/90 backdrop-blur-md z-50 rounded-t-none">
+                 <NavRoute name="add meal" route="/add-meal" />
+                 <NavRoute name="all meals" route="/meal-summary" />
+                 <NavRoute name="meal report" route="/meal-report" />
+               </ul>
+             </details>
+          </li>
           
           {/* Account Dropdown */}
           <li className="list-none">

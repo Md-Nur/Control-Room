@@ -12,6 +12,9 @@ export async function GET(req: NextRequest) {
     return Response.json({ error: "User ID is required" }, { status: 400 });
   }
 
+  const dateFrom = url.searchParams.get("dateFrom");
+  const dateTo = url.searchParams.get("dateTo");
+
   const now = new Date();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -19,6 +22,19 @@ export async function GET(req: NextRequest) {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(now.getDate() - 30);
+
+    const customQuery: any = { date: {} };
+    if (dateFrom) {
+      const [yf, mf, df] = dateFrom.split("-").map(Number);
+      customQuery.date.$gte = new Date(Date.UTC(yf, mf - 1, df));
+    } else {
+      customQuery.date.$gte = thirtyDaysAgo;
+    }
+
+    if (dateTo) {
+      const [yt, mt, dt] = dateTo.split("-").map(Number);
+      customQuery.date.$lte = new Date(Date.UTC(yt, mt - 1, dt, 23, 59, 59, 999));
+    }
 
     const pipeline = [
       {
@@ -37,6 +53,12 @@ export async function GET(req: NextRequest) {
           ],
           thisMonth: [
             { $match: { date: { $gte: firstDayOfMonth, $lt: nextMonth } } },
+            { $unwind: "$dibo" },
+            { $match: { "dibo.id": userId } },
+            { $group: { _id: null, total: { $sum: "$dibo.amount" } } },
+          ],
+          customRange: [
+            { $match: customQuery },
             { $unwind: "$dibo" },
             { $match: { "dibo.id": userId } },
             { $group: { _id: null, total: { $sum: "$dibo.amount" } } },
@@ -61,6 +83,7 @@ export async function GET(req: NextRequest) {
     return Response.json({
       last30DaysExpenses: stats.last30Days[0]?.total || 0,
       thisMonthExpenses: stats.thisMonth[0]?.total || 0,
+      customRangeExpenses: stats.customRange[0]?.total || 0,
       totalExpenses: stats.total[0]?.total || 0,
       userBalance: user?.balance || 0,
     });

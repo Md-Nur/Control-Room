@@ -20,7 +20,7 @@ const khorochSchema = new Schema<Khoroch>({
     type: String, 
     required: true, 
     enum: [
-      "food", "grocery", "transportation", "house_rent", "utilities", 
+      "food", "meal", "grocery", "transportation", "house_rent", "utilities", 
       "entertainment", "healthcare", "shopping", "personal_care", "others", "add-taka"
     ] 
   },

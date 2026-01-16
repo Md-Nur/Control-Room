@@ -3,12 +3,14 @@ import { useKhoroch } from "@/context/addKhoroch";
 import { usePolapainAuth } from "@/context/polapainAuth";
 import axios from "axios";
 import Image from "next/image";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import StepIndicator from "@/components/StepIndicator";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import DateInput from "@/components/DateInput";
 
 interface FormData {
   title: string;
@@ -291,7 +293,7 @@ const AddExpenses = () => {
           {/* Step 1: Member Selection */}
           <div
             id="step-card-1"
-            className={`card bg-base-200 shadow-xl ${
+            className={`card bg-base-200 shadow-xl rounded-2xl ${
               currentStep === 1 ? "ring-2 ring-primary" : ""
             }`}
           >
@@ -309,7 +311,7 @@ const AddExpenses = () => {
                      return (
                          <div 
                              key={member._id}
-                             className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
+                             className={`cursor-pointer p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
                                  isSelected 
                                  ? "border-primary bg-primary/10" 
                                  : "border-transparent bg-base-100 hover:bg-base-300"
@@ -340,7 +342,7 @@ const AddExpenses = () => {
                 <div className="card-actions justify-end mt-4">
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-primary rounded-2xl"
                     onClick={handleNext}
                     disabled={selectedMemberIds.length === 0}
                   >
@@ -356,7 +358,7 @@ const AddExpenses = () => {
           {currentStep >= 2 && (
           <div
             id="step-card-2"
-            className={`card bg-base-200 shadow-xl ${
+            className={`card bg-base-200 shadow-xl rounded-2xl ${
               currentStep === 2 ? "ring-2 ring-primary" : ""
             }`}
           >
@@ -372,7 +374,7 @@ const AddExpenses = () => {
                   <input
                     type="text"
                     placeholder="e.g., Lunch at restaurant"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full rounded-2xl"
                     {...register("title", { required: true })}
                     disabled={currentStep !== 2}
                   />
@@ -385,7 +387,7 @@ const AddExpenses = () => {
                   <input
                     type="number"
                     placeholder="0.00"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full rounded-2xl"
                     step="0.01"
                     min="1"
                     {...register("amount", { required: true, min: 1 })}
@@ -394,13 +396,8 @@ const AddExpenses = () => {
                 </div>
 
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold">Date</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    defaultValue={defaultDate}
+                  <DateInput
+                    label="Date"
                     {...register("date")}
                     disabled={currentStep !== 2}
                   />
@@ -411,13 +408,14 @@ const AddExpenses = () => {
                     <span className="label-text font-semibold">Type</span>
                   </label>
                   <select
-                    className="select select-bordered w-full"
+                    className="select select-bordered w-full rounded-2xl"
                     {...register("type", { required: "Please select a type" })}
                     defaultValue=""
                     disabled={currentStep !== 2}
                   >
                     <option value="" disabled>Select Category</option>
                     <option value="food">🍔 Food</option>
+                    <option value="meal">🍱 Meal</option>
                     <option value="grocery">🛒 Grocery</option>
                     <option value="transportation">🚌 Transportation</option>
                     <option value="house_rent">🏠 House Rent</option>
@@ -434,14 +432,14 @@ const AddExpenses = () => {
                  <div className="card-actions justify-between mt-4">
                     <button
                       type="button"
-                      className="btn btn-outline"
+                      className="btn btn-outline rounded-2xl"
                       onClick={handlePrevious}
                     >
                       ← Previous
                     </button>
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-primary rounded-2xl"
                       onClick={handleNext}
                     >
                       Next →
@@ -456,7 +454,7 @@ const AddExpenses = () => {
           {currentStep >= 3 && (
             <div
               id="step-card-3"
-              className={`card bg-base-200 shadow-xl ${
+              className={`card bg-base-200 shadow-xl rounded-2xl ${
                 currentStep === 3 ? "ring-2 ring-primary" : ""
               }`}
             >
@@ -466,7 +464,7 @@ const AddExpenses = () => {
                   {currentStep === 3 && (
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline"
+                      className="btn btn-sm btn-outline rounded-2xl"
                       onClick={handleEqualSplitDibo}
                     >
                       Split Equally
@@ -478,7 +476,7 @@ const AddExpenses = () => {
                   {selectedMembers.map((polapain, i) => (
                     <div
                       key={polapain._id}
-                      className="flex items-center gap-3 p-3 bg-base-100 rounded-lg"
+                      className="flex items-center gap-3 p-3 bg-base-100 rounded-2xl"
                     >
                       <div className="avatar">
                         <div className="mask mask-squircle w-12">
@@ -497,7 +495,7 @@ const AddExpenses = () => {
                         <input
                           type="number"
                           placeholder="0.00"
-                          className="input input-bordered input-sm w-full mt-1"
+                          className="input input-bordered input-sm w-full mt-1 rounded-2xl"
                           step="0.01"
                           defaultValue={
                               watchedAmount && currentStep === 3 && !getValues(`dibo.${i}.amount`) // Only suggest if empty
@@ -527,7 +525,7 @@ const AddExpenses = () => {
                   ))}
                 </div>
 
-                <div className="alert alert-info mt-4">
+                <div className="alert alert-info mt-4 rounded-2xl">
                   <div className="flex justify-between w-full">
                     <span>Total who pays:</span>
                     <span className={`text-xl md:text-2xl font-black ${Math.abs(diboTotal - Number(watchedAmount)) > 1 ? 'text-error animate-pulse' : 'text-success'}`}>
@@ -540,14 +538,14 @@ const AddExpenses = () => {
                   <div className="card-actions justify-between mt-4">
                     <button
                       type="button"
-                      className="btn btn-outline"
+                      className="btn btn-outline rounded-2xl"
                       onClick={handlePrevious}
                     >
                       ← Previous
                     </button>
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-primary rounded-2xl"
                       onClick={handleNext}
                     >
                       Next →
@@ -562,7 +560,7 @@ const AddExpenses = () => {
           {currentStep >= 4 && (
             <div
               id="step-card-4"
-              className={`card bg-base-200 shadow-xl ${
+              className={`card bg-base-200 shadow-xl rounded-2xl ${
                 currentStep === 4 ? "ring-2 ring-primary" : ""
               }`}
             >
@@ -572,7 +570,7 @@ const AddExpenses = () => {
                   {currentStep === 4 && (
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline"
+                      className="btn btn-sm btn-outline rounded-2xl"
                       onClick={handleManagerPaid}
                     >
                       Manager Paid
@@ -584,7 +582,7 @@ const AddExpenses = () => {
                   {selectedMembers.map((polapain, i) => (
                     <div
                       key={polapain._id}
-                      className="flex items-center gap-3 p-3 bg-base-100 rounded-lg"
+                      className="flex items-center gap-3 p-3 bg-base-100 rounded-2xl"
                     >
                       <div className="avatar">
                         <div className="mask mask-squircle w-12">
@@ -603,7 +601,7 @@ const AddExpenses = () => {
                         <input
                           type="number"
                           placeholder="0.00"
-                          className="input input-bordered input-sm w-full mt-1"
+                          className="input input-bordered input-sm w-full mt-1 rounded-2xl"
                           step="0.01"
                           defaultValue={0}
                           {...register(`dise.${i}.amount`)}
@@ -629,7 +627,7 @@ const AddExpenses = () => {
                   ))}
                 </div>
 
-                <div className="alert alert-info mt-4">
+                <div className="alert alert-info mt-4 rounded-2xl">
                   <div className="flex justify-between w-full">
                     <span>Total who paid:</span>
                     <span className="font-bold">
@@ -642,14 +640,14 @@ const AddExpenses = () => {
                   <div className="card-actions justify-between mt-4">
                     <button
                       type="button"
-                      className="btn btn-outline"
+                      className="btn btn-outline rounded-2xl"
                       onClick={handlePrevious}
                     >
                       ← Previous
                     </button>
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-primary rounded-2xl"
                       onClick={handleNext}
                     >
                       Review →
@@ -662,11 +660,11 @@ const AddExpenses = () => {
 
           {/* Step 5: Review */}
           {currentStep === 5 && (
-            <div id="step-card-5" className="card bg-base-200 shadow-xl ring-2 ring-primary">
+            <div id="step-card-5" className="card bg-base-200 shadow-xl ring-2 ring-primary rounded-2xl">
               <div className="card-body">
                 <h2 className="card-title text-2xl mb-4">✅ Review & Submit</h2>
 
-                <div className="bg-base-100 p-4 rounded-lg space-y-3">
+                <div className="bg-base-100 p-4 rounded-2xl space-y-3">
                    <div className="flex justify-between">
                      <span className="font-semibold">Participants:</span>
                      <span className="text-right">
@@ -687,7 +685,7 @@ const AddExpenses = () => {
                     <span className="font-semibold">Date:</span>
                     <span suppressHydrationWarning>
                       {watch("date")
-                        ? new Date(watch("date")).toLocaleDateString()
+                        ? format(new Date(watch("date")), "dd-MM-yyyy")
                         : ""}
                     </span>
                   </div>
@@ -751,12 +749,12 @@ const AddExpenses = () => {
                 <div className="card-actions justify-between mt-6">
                   <button
                     type="button"
-                    className="btn btn-outline"
+                    className="btn btn-outline rounded-2xl"
                     onClick={handlePrevious}
                   >
                     ← Previous
                   </button>
-                  <button type="submit" className="btn btn-success">
+                  <button type="submit" className="btn btn-success rounded-2xl">
                     Submit Expense ✓
                   </button>
                 </div>

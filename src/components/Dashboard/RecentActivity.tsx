@@ -3,6 +3,7 @@ import { usePolapainAuth } from "@/context/polapainAuth";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { format } from "date-fns";
 import { Khoroch } from "@/models/Khoroch";
 
 import CreativeLoader from "@/components/CreativeLoader";
@@ -73,6 +74,7 @@ const RecentActivity = () => {
   const getCategoryIcon = (type: string) => {
     switch (type) {
       case "food": return "🍔";
+      case "meal": return "🍱";
       case "grocery": return "🛒";
       case "transportation": return "🚗";
       case "house_rent": return "🏠";
@@ -95,17 +97,17 @@ const RecentActivity = () => {
         {loading ? (
           <CreativeLoader />
         ) : (
-          <div className="card bg-base-200 shadow-xl border border-base-300">
+          <div className="card bg-base-200/50 shadow-xl border border-base-content/5 rounded-2xl">
             <div className="card-body p-6 md:p-8">
               {recentExpenses && recentExpenses.length > 0 ? (
                 <div className="space-y-4">
                   {recentExpenses.map((expense) => (
                     <div
                       key={String(expense._id) || Math.random()}
-                      className="group grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4 bg-base-100/50 hover:bg-base-100 rounded-xl border border-transparent hover:border-base-content/10 transition-all duration-200"
+                      className="group grid grid-cols-[auto_1fr_auto] gap-4 items-center p-4 bg-base-100/50 hover:bg-base-100 rounded-2xl border border-transparent hover:border-base-content/10 transition-all duration-200"
                     >
                       {/* Icon */}
-                      <div className="text-3xl p-3 bg-base-200 rounded-lg group-hover:scale-110 transition-transform">
+                      <div className="text-3xl p-3 bg-base-200 rounded-2xl group-hover:scale-110 transition-transform">
                         {getCategoryIcon(expense.type)}
                       </div>
 
@@ -113,11 +115,7 @@ const RecentActivity = () => {
                       <div className="flex flex-col gap-1 min-w-0">
                         <h3 className="font-bold text-lg truncate">{expense.title}</h3>
                         <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider" suppressHydrationWarning>
-                          {new Date(expense.date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {format(new Date(expense.date), "dd-MM-yyyy")}
                         </p>
                       </div>
 

@@ -1,10 +1,12 @@
 "use client";
+import { format } from "date-fns";
 import { Khoroch } from "@/models/Khoroch";
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CreativeLoader from "@/components/CreativeLoader";
+import DateInput from "@/components/DateInput";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Khoroch[]>([]);
@@ -72,6 +74,8 @@ const Expenses = () => {
     switch (type) {
       case "food":
         return "🍔";
+      case "meal":
+        return "🍱";
       case "others":
         return "📦";
       case "add-taka":
@@ -107,7 +111,7 @@ const Expenses = () => {
           Title: exp.title,
           Amount: exp.amount,
           Type: exp.type,
-          Date: new Date(exp.date).toLocaleDateString(),
+          Date: format(new Date(exp.date), "dd-MM-yyyy"),
           "Who Pays": exp.dibo.map((p) => p.name).join(", "),
           "Who Paid": exp.dise.reduce((a, p) => a + p.amount, 0) > 0
             ? exp.dise.filter((p) => p.amount > 0).map((p) => p.name).join(", ")
@@ -142,7 +146,7 @@ const Expenses = () => {
   const filteredExpenses = { length: totalItems };
 
   const CATEGORIES = [
-      "food", "grocery", "transportation", "house_rent", "utilities", 
+      "food", "meal", "grocery", "transportation", "house_rent", "utilities", 
       "entertainment", "healthcare", "shopping", "personal_care", "others"
   ];
 
@@ -159,14 +163,14 @@ const Expenses = () => {
 
             <div className="flex gap-3">
                  {/* Total Badge */}
-                <div className="stats shadow bg-base-200/50 border border-base-content/10">
+                <div className="stats shadow-lg bg-base-200/50 border border-base-content/10 rounded-2xl">
                     <div className="stat py-2 px-4">
                         <div className="stat-title text-xs font-bold opacity-60 uppercase">Total Spent</div>
                         <div className="stat-value text-xl md:text-2xl text-primary">{totalExpenses.toFixed(0)} ৳</div>
                     </div>
                 </div>
                  {/* Average Badge (Only visible on larger screens to keep mobile minimal) */}
-                <div className="stats shadow bg-base-200/50 border border-base-content/10 hidden sm:inline-grid">
+                <div className="stats shadow-lg bg-base-200/50 border border-base-content/10 hidden sm:inline-grid rounded-2xl">
                     <div className="stat py-2 px-4">
                         <div className="stat-title text-xs font-bold opacity-60 uppercase">Avg/Txn</div>
                         <div className="stat-value text-xl md:text-2xl text-secondary">
@@ -224,21 +228,17 @@ const Expenses = () => {
                 </select>
 
                 {/* Date Inputs */}
-                <div className="flex items-center gap-1">
-                    <input
-                        type="date"
-                        className="input input-bordered h-9 w-32 rounded-lg bg-base-100 shadow-sm text-xs font-bold px-2"
+                <div className="flex items-center gap-2">
+                    <DateInput
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
-                        placeholder="From"
+                        className="!h-9 !rounded-full !text-xs !w-32 !px-3"
                     />
                     <span className="opacity-30">-</span>
-                    <input
-                        type="date"
-                        className="input input-bordered h-9 w-32 rounded-lg bg-base-100 shadow-sm text-xs font-bold px-2"
+                    <DateInput
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
-                        placeholder="To"
+                        className="!h-9 !rounded-full !text-xs !w-32 !px-3"
                     />
                 </div>
 
@@ -264,7 +264,7 @@ const Expenses = () => {
           ) : (
             <>
               {/* Desktop Table */}
-              <div className="hidden md:block overflow-x-auto rounded-xl border border-base-content/10 bg-base-100 shadow-sm pb-24">
+              <div className="hidden md:block overflow-x-auto rounded-2xl border border-base-content/10 bg-base-100 shadow-xl pb-24">
                 <table className="table table-sm">
                   <thead className="bg-base-200/50">
                     <tr>
@@ -279,7 +279,7 @@ const Expenses = () => {
                     {paginatedExpenses.map((expense) => (
                       <tr key={expense._id.toString()} className="hover:bg-base-200/30 border-b border-base-content/5 last:border-0">
                         <td className="w-32 text-xs opacity-70 font-mono">
-                            {new Date(expense.date).toLocaleDateString()}
+                            {format(new Date(expense.date), "dd-MM-yyyy")}
                         </td>
                         <td>
                             <div className="flex items-center gap-2">
@@ -327,8 +327,8 @@ const Expenses = () => {
 
               {/* Mobile Cards */}
               <div className="md:hidden grid gap-3">
-                {paginatedExpenses.map((expense) => (
-                    <div key={expense._id.toString()} className="card bg-base-100 shadow-sm border border-base-content/10 compact p-0">
+                {expenses.map((expense) => (
+                    <div key={expense._id.toString()} className="card bg-base-100 shadow-lg border border-base-content/10 compact p-0 rounded-2xl">
                         <div className="card-body flex-row justify-between items-center p-3">
                             <div className="flex items-center gap-3">
                                 <div className="text-2xl bg-base-200/50 p-2 rounded-lg">
@@ -359,7 +359,7 @@ const Expenses = () => {
                                          {/* Date & Split Row */}
                                          <div className="flex items-center gap-2">
                                              <span className="text-xs opacity-50 font-mono">
-                                                 {new Date(expense.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
+                                                 {format(new Date(expense.date), "dd-MM-yyyy")}
                                              </span>
                                          {/* Improved Split Preview in Mobile Card */}
                                          <div className="flex -space-x-1">
