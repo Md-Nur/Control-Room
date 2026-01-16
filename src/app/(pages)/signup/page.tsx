@@ -21,11 +21,18 @@ const SignUp = () => {
   const [avatar, setAvatar] = useState("");
   const [preview, setPreview] = useState("");
   const [progress, setProgress] = useState(0);
+  const [registrationEnabled, setRegistrationEnabled] = useState<boolean | null>(null);
   const auth = usePolapainAuth();
   if (typeof auth === "string") {
     throw new Error(auth);
   }
   const { setPolapainAuth } = auth;
+
+  useState(() => {
+    axios.get("/api/settings").then((res) => {
+      setRegistrationEnabled(res.data.registrationEnabled);
+    });
+  });
 
   const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
     toast.loading("Signing up...");
@@ -76,6 +83,27 @@ const SignUp = () => {
       toast.success("Avatar uploaded");
     }
   };
+
+  if (registrationEnabled === false) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+        <div className="text-9xl mb-6">🔒</div>
+        <h1 className="text-4xl font-bold text-center mb-4">Registration Closed</h1>
+        <p className="text-center opacity-70 max-w-md">
+          The Control Room is currently not accepting new polapains. 
+          Please contact the manager if you think this is a mistake.
+        </p>
+        <button 
+          onClick={() => window.location.href = "/"}
+          className="btn btn-primary mt-8 rounded-2xl"
+        >
+          Go back Home
+        </button>
+      </div>
+    );
+  }
+
+  if (registrationEnabled === null) return null; // Or a loader
 
   return (
     <div className="h-full w-full my-10">

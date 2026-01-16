@@ -27,6 +27,8 @@ const AddMealPage = () => {
     
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [existingMealUserIds, setExistingMealUserIds] = useState<string[]>([]);
+    const [isValidating, setIsValidating] = useState(false);
 
     useEffect(() => {
         const fetchPolapains = async () => {
@@ -58,7 +60,24 @@ const AddMealPage = () => {
         }
     };
 
-    const handleNext = () => {
+    const checkExistingMeals = async () => {
+        setIsValidating(true);
+        try {
+            // We can fetch meals for the selected date and see which users already have records
+            // The /api/meals GET endpoint supports date filtering
+            const res = await axios.get(`/api/meals?dateFrom=${date}&dateTo=${date}&limit=100`);
+            const existingMeals = res.data.meals;
+            const existingIds = existingMeals.map((m: any) => m.user._id);
+            const duplicates = selectedMemberIds.filter(id => existingIds.includes(id));
+            setExistingMealUserIds(duplicates);
+        } catch (err) {
+            console.error("Failed to check existing meals", err);
+        } finally {
+            setIsValidating(false);
+        }
+    };
+
+    const handleNext = async () => {
         if (currentStep === 1 && selectedMemberIds.length === 0) {
             toast.error("Please select at least one member");
             return;
@@ -67,6 +86,11 @@ const AddMealPage = () => {
             toast.error("Please select at least one meal type");
             return;
         }
+        
+        if (currentStep === 2) {
+            await checkExistingMeals();
+        }
+
         setCurrentStep(prev => prev + 1);
     };
 
@@ -89,7 +113,7 @@ const AddMealPage = () => {
             await Promise.all(promises);
             toast.dismiss(loadingToast);
             toast.success("Meals added successfully!");
-            router.push("/meal-manager");
+            router.push("/meal-summary");
         } catch (err) {
             toast.dismiss(loadingToast);
             toast.error("Failed to add some meals");
@@ -182,7 +206,18 @@ const AddMealPage = () => {
                                 </div>
                                 <div className="card-actions justify-between mt-10">
                                     <button className="btn btn-ghost rounded-2xl" onClick={handleBack}>← Back</button>
-                                    <button className="btn btn-primary rounded-2xl px-12" onClick={handleNext}>Review →</button>
+                                    <button 
+                                        className="btn btn-primary rounded-2xl px-12" 
+                                        onClick={handleNext}
+                                        disabled={isValidating}
+                                    >
+                                        {isValidating ? (
+                                            <span className="flex items-center gap-2">
+                                                <span className="loading loading-spinner loading-xs"></span>
+                                                Validating...
+                                            </span>
+                                        ) : "Review →"}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -193,6 +228,25 @@ const AddMealPage = () => {
                         <div className="card bg-base-200/50 shadow-xl rounded-2xl border border-base-content/5">
                             <div className="card-body p-8">
                                 <h2 className="card-title text-2xl font-black mb-6">✅ Review Entry</h2>
+                                
+                                {existingMealUserIds.length > 0 && (
+                                    <div className="alert alert-warning shadow-lg mb-6 rounded-2xl border-none bg-warning/20 text-warning-content animate-pulse">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-2xl">⚠️</span>
+                                            <div>
+                                                <h3 className="font-bold text-sm">Duplicate Entry Warning</h3>
+                                                <div className="text-[10px] opacity-80 leading-tight">
+                                                    The following users already have meal records for this date:
+                                                    <span className="font-bold ml-1">
+                                                        {polapains.filter(p => existingMealUserIds.includes(p._id)).map(p => p.name).join(", ")}
+                                                    </span>.
+                                                    Saving will overwrite their existing records.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="bg-base-100 p-6 rounded-2xl space-y-4 shadow-inner">
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs font-black uppercase opacity-40">Date</span>

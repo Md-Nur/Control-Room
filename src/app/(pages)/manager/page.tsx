@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CreativeLoader from "@/components/CreativeLoader";
+import { usePolapainAuth } from "@/context/polapainAuth";
 
 const Manager = () => {
   const [polapains, setPolapains] = useState<Polapain[]>();
@@ -21,21 +22,35 @@ const Manager = () => {
     addTaka: { id: string; amount: number }[];
   }>();
   const router = useRouter();
+  const { polapainAuth, setPolapainAuth } = usePolapainAuth();
+
+  const [isTransferMode, setIsTransferMode] = useState(false);
+  const [showTransferConfirm, setShowTransferConfirm] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState<Polapain | null>(null);
+
+  const [registrationEnabled, setRegistrationEnabled] = useState(true);
+  const [isUpdatingSettings, setIsUpdatingSettings] = useState(false);
 
   const watchedAmounts = watch("addTaka");
 
   useEffect(() => {
+    // Fetch users
     axios
       .get<Polapain[]>("/api/polapain")
       .then((res) => {
         setPolapains(res.data);
       })
       .catch((err) => {
-        toast.error(err.response.data.error);
+        toast.error(err.response?.data?.error || "Failed to fetch users");
       })
       .finally(() => {
         setLoading(false);
       });
+
+    // Fetch settings
+    axios.get("/api/settings").then((res) => {
+      setRegistrationEnabled(res.data.registrationEnabled);
+    });
   }, []);
 
   const handleAddSameToAll = () => {
@@ -82,6 +97,48 @@ const Manager = () => {
         toast.dismiss();
         toast.error(err.response.data.error);
       });
+  };
+
+  const handleTransferPower = (recipient: Polapain) => {
+    setSelectedRecipient(recipient);
+    setShowTransferConfirm(true);
+  };
+
+  const confirmTransferPower = async () => {
+    if (!selectedRecipient || !polapainAuth?._id) return;
+
+    const loadingToast = toast.loading("Transferring management power...");
+    setShowTransferConfirm(false);
+
+    try {
+      await axios.post("/api/manager/transfer", {
+        fromId: polapainAuth._id,
+        toId: selectedRecipient._id,
+      });
+      toast.dismiss(loadingToast);
+      toast.success(`Success! ${selectedRecipient.name} is now the Manager.`);
+      
+      // Update local auth state and redirect
+      setPolapainAuth(undefined); // Logout or clear manager status locally
+      router.push("/");
+    } catch (err: any) {
+      toast.dismiss(loadingToast);
+      toast.error(err.response?.data?.error || "Transfer failed");
+    }
+  };
+
+  const handleToggleRegistration = async () => {
+    setIsUpdatingSettings(true);
+    const newValue = !registrationEnabled;
+    try {
+      await axios.post("/api/settings", { registrationEnabled: newValue });
+      setRegistrationEnabled(newValue);
+      toast.success(newValue ? "Registration Enabled" : "Registration Disabled");
+    } catch (err) {
+      toast.error("Failed to update registration status");
+    } finally {
+      setIsUpdatingSettings(false);
+    }
   };
 
   const getNewBalance = (currentBalance: number, addAmount: number) => {
@@ -147,6 +204,42 @@ const Manager = () => {
           </div>
         </div>
 
+        <div className="flex justify-center mb-8">
+           <button 
+             onClick={() => setIsTransferMode(!isTransferMode)}
+             className={`btn btn-sm rounded-2xl ${isTransferMode ? 'btn-error' : 'btn-warning'}`}
+           >
+             {isTransferMode ? "❌ Cancel Transfer" : "👑 Transfer Manager Power"}
+           </button>
+        </div>
+
+        {/* Global Settings */}
+        <div className="card bg-base-200/50 shadow-xl border border-base-content/5 rounded-2xl mb-8">
+          <div className="card-body p-6">
+            <h2 className="card-title text-xl mb-4">⚙️ System Configuration</h2>
+            <div className="flex items-center justify-between p-4 bg-base-100 rounded-2xl shadow-sm border border-base-content/5">
+              <div>
+                <span className="font-bold block">User Registration</span>
+                <span className="text-xs text-base-content/60">Allow new users to sign up via the signup page</span>
+              </div>
+              <div className="form-control">
+                <label className="label cursor-pointer gap-4">
+                  <span className={`text-xs font-bold ${registrationEnabled ? 'text-success' : 'text-error'}`}>
+                    {registrationEnabled ? "ENABLED" : "DISABLED"}
+                  </span>
+                  <input 
+                    type="checkbox" 
+                    className="toggle toggle-primary" 
+                    checked={registrationEnabled}
+                    onChange={handleToggleRegistration}
+                    disabled={isUpdatingSettings}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="card bg-base-200/50 shadow-xl border border-base-content/5 rounded-2xl">
           <div className="card-body">
             <div className="flex justify-between items-center mb-6">
@@ -204,6 +297,16 @@ const Manager = () => {
                               </span>
                             </p>
                           </div>
+                          {isTransferMode && polapain._id !== polapainAuth?._id && (
+                            <button 
+                              type="button"
+                              onClick={() => handleTransferPower(polapain)}
+                              className="btn btn-circle btn-sm btn-warning shadow-md hover:scale-110 transition-transform"
+                              title="Make Manager"
+                            >
+                              👑
+                            </button>
+                          )}
                         </div>
 
                         <input
@@ -294,6 +397,16 @@ const Manager = () => {
         onCancel={() => setShowConfirm(false)}
         confirmText="Yes, Add Balance"
         confirmButtonClass="btn-primary"
+      />
+
+      <ConfirmDialog
+        isOpen={showTransferConfirm}
+        title="⚠️ Critical: Transfer Manager Power"
+        message={`Are you sure you want to transfer management power to ${selectedRecipient?.name}? You will lose access to this panel immediately.`}
+        onConfirm={confirmTransferPower}
+        onCancel={() => setShowTransferConfirm(false)}
+        confirmText="Yes, Transfer Power"
+        confirmButtonClass="btn-error"
       />
     </section>
   );

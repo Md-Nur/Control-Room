@@ -1,13 +1,23 @@
 import dbConnect from "@/lib/dbConnect";
 import PolapainModel from "@/models/Polapain";
+import Settings from "@/models/Settings";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
-  return Response.json({ message: "ekhon kono pola dhukte parbo na" });
   await dbConnect();
+
+  // Check if registration is enabled
+  const registrationSetting = await Settings.findOne({ key: "registrationEnabled" });
+  if (registrationSetting && registrationSetting.value === false) {
+    return NextResponse.json(
+      { error: "Registration is currently closed by the manager" },
+      { status: 403 }
+    );
+  }
+
   const cookieStore = await cookies();
   const polapain = await req.json();
 

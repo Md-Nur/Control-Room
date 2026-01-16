@@ -1,42 +1,50 @@
-import Settings from "@/models/Settings";
 import dbConnect from "@/lib/dbConnect";
-import { NextRequest } from "next/server";
+import Settings from "@/models/Settings";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import PolapainModel from "@/models/Polapain";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   await dbConnect();
-  const url = new URL(req.url);
-  const key = url.searchParams.get("key");
-
   try {
-    if (key) {
-      const setting = await Settings.findOne({ key });
-      return Response.json(setting || { key, value: null });
-    }
-    const settings = await Settings.find({});
-    return Response.json(settings);
+    const registrationSetting = await Settings.findOne({ key: "registrationEnabled" });
+    return NextResponse.json({ 
+      registrationEnabled: registrationSetting ? registrationSetting.value : true 
+    });
   } catch (error) {
-    return Response.json({ error: "Failed to fetch settings" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   await dbConnect();
   try {
-    const body = await req.json();
-    const { key, value } = body;
-
-    if (!key || value === undefined) {
-      return Response.json({ error: "Key and value are required" }, { status: 400 });
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const setting = await Settings.findOneAndUpdate(
-      { key },
-      { value },
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const user = await PolapainModel.findById(decoded._id);
+
+    if (!user || !user.isManager) {
+      return NextResponse.json({ error: "Unauthorized: Manager only" }, { status: 403 });
+    }
+
+    const { registrationEnabled } = await req.json();
+
+    await Settings.findOneAndUpdate(
+      { key: "registrationEnabled" },
+      { key: "registrationEnabled", value: registrationEnabled },
       { upsert: true, new: true }
     );
 
-    return Response.json(setting);
+    return NextResponse.json({ success: true, registrationEnabled });
   } catch (error) {
-    return Response.json({ error: "Failed to save setting" }, { status: 500 });
+    console.error("Settings update error:", error);
+    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
   }
 }
