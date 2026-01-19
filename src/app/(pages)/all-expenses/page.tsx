@@ -357,26 +357,29 @@ const Expenses = () => {
                                          </div>
                                          
                                          {/* Date & Split Row */}
-                                         <div className="flex items-center gap-2">
-                                             <span className="text-xs opacity-50 font-mono">
-                                                 {format(new Date(expense.date), "dd-MM-yyyy")}
-                                             </span>
-                                         {/* Improved Split Preview in Mobile Card */}
-                                         <div className="flex -space-x-1">
-                                            {expense.dibo.slice(0, 3).map(p => p.amount > 0 && (
-                                                <div key={p.id} className="avatar w-4 h-4 tooltip tooltip-bottom" data-tip={`${p.name}: ${p.amount}`} title={`${p.name}: ${p.amount}`}>
-                                                    <div className="rounded-full grayscale ring ring-base-100 ring-offset-0">
-                                                        <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={16} height={16} />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {expense.dibo.filter(p => p.amount > 0).length > 3 && (
-                                                <div className="w-4 h-4 rounded-full bg-base-300 text-[8px] flex items-center justify-center font-bold">
-                                                    +{expense.dibo.filter(p => p.amount > 0).length - 3}
-                                                </div>
-                                            )}
+                                         {/* Date Row */}
+                                         <div className="text-xs opacity-50 font-mono">
+                                             {format(new Date(expense.date), "dd-MM-yyyy")}
                                          </div>
-                                    </div>
+
+                                         {/* Split Among Row */}
+                                         <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs opacity-70">Split:</span>
+                                            <div className="flex -space-x-2">
+                                                {expense.dibo.slice(0, 5).map(p => p.amount > 0 && (
+                                                    <div key={p.id} className="avatar w-6 h-6 tooltip tooltip-bottom" data-tip={`${p.name}: ${p.amount}`} title={`${p.name}: ${p.amount}`}>
+                                                        <div className="rounded-full grayscale ring ring-base-100 ring-offset-0">
+                                                            <Image src={p.avatar || "/avatar.jpg"} alt={p.name} width={24} height={24} />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {expense.dibo.filter(p => p.amount > 0).length > 5 && (
+                                                    <div className="w-6 h-6 rounded-full bg-base-300 text-[10px] flex items-center justify-center font-bold ring ring-base-100 ring-offset-0 z-10">
+                                                        +{expense.dibo.filter(p => p.amount > 0).length - 5}
+                                                    </div>
+                                                )}
+                                            </div>
+                                         </div>
                                 </div>
                             </div>
                         </div>
